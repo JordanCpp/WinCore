@@ -18,13 +18,15 @@ along with this library; if not, see <https://gnu.org>.
 #ifndef WinCore_Null_Window_hpp
 #define WinCore_Null_Window_hpp
 
-#include <WinCore/SDL2/Window.hpp>
+#include <WinCore/Window.hpp>
 #include <WinCore/BaseWindow.hpp>
 
 class Window
 {
 public:
 	Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
+	~Window();
+	void* Native();
 private:
 	BaseWindow _baseWindow;
 };

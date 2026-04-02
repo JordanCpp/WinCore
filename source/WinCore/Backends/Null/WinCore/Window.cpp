@@ -15,7 +15,7 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library; if not, see <https://gnu.org>.
 */
 
-#include <WinCore/Null/Window.hpp>
+#include <WinCore/Window.hpp>
 
 Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
@@ -31,4 +31,13 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	_baseWindow.hMenu        = hMenu;
 	_baseWindow.hInstance    = hInstance;
 	_baseWindow.lpParam      = lpParam;
+}
+
+Window::~Window()
+{
+}
+
+void* Window::Native()
+{
+	return NULL;
 }

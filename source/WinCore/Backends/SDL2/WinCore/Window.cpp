@@ -43,3 +43,8 @@ Window::~Window()
 		SDL_DestroyWindow(_window);
 	}
 }
+
+void* Window::Native()
+{
+	return _window;
+}

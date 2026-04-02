@@ -45,3 +45,16 @@ Window* WindowManager::Find(HWND hwnd)
 
 	return NULL;
 }
+
+Window* WindowManager::FindNative(void* native)
+{
+	for (container::iterator i = _windows.begin(); i != _windows.end(); i++)
+	{
+		if (i->second->Native() == native)
+		{
+			return i->second;
+		}
+	}
+
+	return NULL;
+}

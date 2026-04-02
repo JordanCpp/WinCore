@@ -28,6 +28,7 @@ public:
 	~WindowManager();
 	void Append(HWND handle, Window* window);
 	Window* Find(HWND hwnd);
+	Window* FindNative(void* native);
 private:
 	typedef std::map<HWND, Window*> container;
 	container _windows;

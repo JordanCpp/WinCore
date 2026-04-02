@@ -58,10 +58,12 @@ BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UI
 	{
 		if (_eventHandler.GetEvent(msg))
 		{
-			for (ClassRegistrator::container::const_iterator i = _classRegistrator.GetClasses().begin(); i != _classRegistrator.GetClasses().end(); i++)
-			{
-				i->second.lpfnWndProc(NULL, msg.message, msg.wParam, msg.lParam);
-			}
+			lpMsg->hwnd    = NULL;
+			lpMsg->message = msg.message;
+			lpMsg->wParam  = msg.wParam;
+			lpMsg->lParam  = msg.lParam;
+			lpMsg->time    = msg.time;
+			lpMsg->pt      = msg.pt;
 		}
 	}
 
@@ -76,6 +78,57 @@ void Application::PostQuitMessageImpl(int nExitCode)
 LRESULT Application::DefWindowProcAImpl(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
 	return LRESULT();
+}
+
+LRESULT Application::DispatchMessageA(const MSG* lpMsg)
+{
+	for (ClassRegistrator::container::const_iterator i = _classRegistrator.GetClasses().begin(); i != _classRegistrator.GetClasses().end(); i++)
+	{
+		i->second.lpfnWndProc(NULL, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+	}
+
+	return true;
+}
+
+HDC Application::GetDCImpl(HWND hWnd)
+{
+	return (HDC)hWnd;
+}
+
+HGLRC Application::wglCreateContextImpl(HDC hdc)
+{
+	Window* window = _windowManager.Find((HWND)hdc);
+
+	if (window)
+	{
+		window->CreateContext();
+	}
+
+	return (HGLRC)hdc;
+}
+
+BOOL Application::wglMakeCurrentImpl(HDC hdc, HGLRC hglrc)
+{
+	Window* window = _windowManager.Find((HWND)hdc);
+
+	if (window)
+	{
+		window->MakeCurrent();
+	}
+
+	return false;
+}
+
+BOOL Application::SwapBuffers(HDC hdc)
+{
+	Window* window = _windowManager.Find((HWND)hdc);
+
+	if (window)
+	{
+		return window->SwapBuffers();
+	}
+
+	return false;
 }
 
 Application& MainApplication()

@@ -18,11 +18,15 @@ along with this library; if not, see <https://gnu.org>.
 #ifndef WinCore_Null_EventHandler_hpp
 #define WinCore_Null_EventHandler_hpp
 
+#include <WinCore/Windows.h>
+
 class EventHandler
 {
 public:
+	EventHandler();
 	bool IsRunning();
 	void StopEvents();
+	bool GetEvent(MSG& msg);
 private:
 	bool _running;
 };

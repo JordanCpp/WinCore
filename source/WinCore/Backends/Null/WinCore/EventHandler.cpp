@@ -15,7 +15,12 @@ You should have received a copy of the GNU Lesser General Public License
 along with this library; if not, see <https://gnu.org>.
 */
 
-#include <WinCore/Null/EventHandler.hpp>
+#include <WinCore/EventHandler.hpp>
+
+EventHandler::EventHandler() :
+	_running(true)
+{
+}
 
 bool EventHandler::IsRunning()
 {
@@ -25,4 +30,9 @@ bool EventHandler::IsRunning()
 void EventHandler::StopEvents()
 {
 	_running = false;
+}
+
+bool EventHandler::GetEvent(MSG& msg)
+{
+	return false;
 }

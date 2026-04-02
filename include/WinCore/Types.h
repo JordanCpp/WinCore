@@ -24,7 +24,8 @@ along with this library; if not, see <https://gnu.org>.
 #define NEAR
 #define CALLBACK
 
-typedef void* HANDLE;
+typedef void*  LPVOID;
+typedef void*  HANDLE;
 typedef HANDLE HWND;
 typedef HANDLE HINSTANCE;
 typedef HANDLE HICON;
@@ -32,21 +33,23 @@ typedef HANDLE HCURSOR;
 typedef HANDLE HBRUSH;
 typedef HANDLE HMODULE;
 typedef HANDLE HMENU;
+typedef HANDLE HDC;
+typedef HANDLE HGLRC;
 
-typedef void* LPVOID;
+typedef unsigned char   BYTE;
+typedef unsigned short  WORD;
+typedef unsigned int    UINT;
+typedef unsigned int    UINT_PTR;
+typedef long            LONG_PTR;
+typedef unsigned long   DWORD;
+typedef UINT_PTR        WPARAM;
+typedef LONG_PTR        LPARAM;
+typedef LONG_PTR        LRESULT;
+typedef long            LONG;
+typedef int             BOOL;
+typedef long            ATOM;
 
-typedef unsigned int   UINT;
-typedef unsigned int   UINT_PTR;
-typedef long           LONG_PTR;
-typedef unsigned long  DWORD;
-typedef UINT_PTR       WPARAM;
-typedef LONG_PTR       LPARAM;
-typedef LONG_PTR       LRESULT;
-typedef long           LONG;
-typedef int            BOOL;
-typedef long           ATOM;
-
-typedef char CHAR;
+typedef char  CHAR;
 typedef const CHAR* LPCSTR, *PCSTR;
 
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);

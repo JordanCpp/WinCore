@@ -34,10 +34,14 @@ public:
 	BOOL GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
 	void PostQuitMessageImpl(int nExitCode);
 	LRESULT DefWindowProcAImpl(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-
+	LRESULT DispatchMessageA(const MSG* lpMsg);
+	HDC GetDCImpl(HWND hWnd);
+	HGLRC wglCreateContextImpl(HDC hdc);
+	BOOL wglMakeCurrentImpl(HDC hdc, HGLRC hglrc);
+	BOOL SwapBuffers(HDC hdc);
+private:
 	Initializer      _initializer;
 	EventHandler     _eventHandler;
-
 	ClassRegistrator _classRegistrator;
 	WindowCreator    _windowCreator;
 	WindowManager    _windowManager;

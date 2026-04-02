@@ -32,26 +32,36 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         break;
     }
 
-    return DefWindowProcA(hwnd, msg, wParam, lParam);
+    return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
 int main(int argc, char* argv[])
 {
     WNDCLASS wc;
-    MSG msg;
+    MSG      msg;
 
     wc.lpszClassName = "asdad";
-    wc.lpszMenuName = "asdad";
-    wc.lpfnWndProc = WndProc;
+    wc.lpszMenuName  = "asdad";
+    wc.lpfnWndProc   = WndProc;
 
-    RegisterClassA(&wc);
+    RegisterClass(&wc);
 
     DWORD style = 0;
-    HWND hwnd = CreateWindowExA(0, wc.lpszClassName, "Title window", style, 100, 100, 800, 600, NULL, NULL, wc.hInstance, NULL);
+    HWND  hwnd  = CreateWindowEx(0, wc.lpszClassName, "Title window", style, 100, 100, 800, 600, NULL, NULL, wc.hInstance, NULL);
 
+    HDC hDC = GetDC(hwnd);
 
-    while (GetMessageA(&msg, NULL, 0, 0))
+    PIXELFORMATDESCRIPTOR pfd;
+
+    HGLRC hRC = wglCreateContext(hDC);
+
+    wglMakeCurrent(hDC, hRC);
+
+    while (GetMessage(&msg, NULL, 0, 0))
     {
+        DispatchMessage(&msg);
+
+        SwapBuffers(hDC);
     }
 
     return 0;

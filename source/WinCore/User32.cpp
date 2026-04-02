@@ -48,6 +48,11 @@ LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 	return MainApplication().DefWindowProcAImpl(hWnd, Msg, wParam, lParam);
 }
 
+LRESULT DispatchMessageA(const MSG* lpMsg)
+{
+	return MainApplication().DispatchMessageA(lpMsg);
+}
+
 HMODULE GetModuleHandleA(LPCSTR lpModuleName)
 {
 	return 0;

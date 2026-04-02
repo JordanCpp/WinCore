@@ -60,7 +60,11 @@ typedef struct WNDCLASSA
     LPCSTR      lpszClassName;
 } WNDCLASSA;
 
-typedef WNDCLASSA WNDCLASS;
+#ifdef UNICODE
+#else
+    typedef WNDCLASSA WNDCLASS;
+#endif
+
 
 HMODULE GetModuleHandleA(LPCSTR lpModuleName);
 
@@ -75,6 +79,17 @@ BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 void PostQuitMessage(int nExitCode);
 
 LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+
+LRESULT DispatchMessageA(const MSG* lpMsg);
+
+#ifdef UNICODE
+#else
+    #define RegisterClass    RegisterClassA
+    #define CreateWindowEx   CreateWindowExA 
+    #define GetMessage       GetMessageA
+    #define DefWindowProc    DefWindowProcA
+    #define DispatchMessage  DispatchMessageA
+#endif
 
 #ifdef __cplusplus
 }

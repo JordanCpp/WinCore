@@ -19,5 +19,6 @@ along with this library; if not, see <https://gnu.org>.
 #define WinCore_Windows_h
 
 #include <WinCore/User32.h>
+#include <WinCore/Gdi32.h>
 
 #endif
