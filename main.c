@@ -16,6 +16,7 @@ along with this library; if not, see <https://gnu.org>.
 */
 
 #include <windows.h>
+#include <gl/GL.h>
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 

@@ -16,6 +16,7 @@ along with this library; if not, see <https://gnu.org>.
 */
 
 #include <stdio.h>
+#include <WinCore/GL/GL.h>
 #include <WinCore/Windows.h>
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -24,6 +25,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
     case WM_CREATE:
         printf("WM_CREATE\n");
+        break;
+
+    case WM_PAINT:
+        printf("WM_PAINT\n");
         break;
 
     case WM_DESTROY:
@@ -57,9 +62,14 @@ int main(int argc, char* argv[])
 
     wglMakeCurrent(hDC, hRC);
 
+    glViewport(0, 0, 800, 600);
+
     while (GetMessage(&msg, NULL, 0, 0))
     {
         DispatchMessage(&msg);
+
+        glClearColor(255, 0.0f, 0.0f, 0.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         SwapBuffers(hDC);
     }

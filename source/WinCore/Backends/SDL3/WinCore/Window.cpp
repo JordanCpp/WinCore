@@ -35,7 +35,7 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	_baseWindow.hInstance    = hInstance;
 	_baseWindow.lpParam      = lpParam;
 
-	_window   = SDL_CreateWindow(_baseWindow.lpWindowName.c_str(), _baseWindow.nWidth, _baseWindow.nHeight, SDL_WINDOW_RESIZABLE);
+	_window   = SDL_CreateWindow(_baseWindow.lpWindowName.c_str(), _baseWindow.nWidth, _baseWindow.nHeight, SDL_WINDOW_OPENGL);
 	_renderer = SDL_CreateRenderer(_window, _baseWindow.lpClassName.c_str());
 }
 

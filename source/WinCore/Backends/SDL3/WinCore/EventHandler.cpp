@@ -35,7 +35,7 @@ void EventHandler::StopEvents()
 
 bool EventHandler::GetEvent(MSG& msg)
 {
-	SDL_Event event = {0};
+	SDL_Event event = { 0 };
 
 	if (SDL_PollEvent(&event))
 	{
@@ -48,4 +48,28 @@ bool EventHandler::GetEvent(MSG& msg)
 	}
 
 	return false;
+}
+
+void EventHandler::Pump(std::deque<MSG> messages)
+{
+	SDL_Event event = { 0 };
+
+	while (SDL_PollEvent(&event))
+	{
+		MSG msg = { 0 };
+
+		msg.hwnd = (HWND)SDL_GetWindowFromID(event.window.windowID);
+
+		switch (event.type)
+		{
+		case SDL_EVENT_QUIT:
+			msg.message = WM_DESTROY;
+			messages.push_back(msg);
+			break;
+		case SDL_EVENT_WINDOW_EXPOSED:
+			msg.message = WM_PAINT;
+			messages.push_back(msg);
+			break;
+		}
+	}
 }

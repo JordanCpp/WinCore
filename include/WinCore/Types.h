@@ -23,6 +23,7 @@ along with this library; if not, see <https://gnu.org>.
 #define FAR
 #define NEAR
 #define CALLBACK
+#define WINAPI __stdcall
 
 typedef void*  LPVOID;
 typedef void*  HANDLE;

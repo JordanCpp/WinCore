@@ -27,6 +27,9 @@ public:
 	Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 	~Window();
 	void* Native();
+	void CreateContext();
+	BOOL MakeCurrent();
+	BOOL SwapBuffers();
 private:
 	BaseWindow _baseWindow;
 };

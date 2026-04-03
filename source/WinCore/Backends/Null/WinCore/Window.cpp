@@ -41,3 +41,17 @@ void* Window::Native()
 {
 	return NULL;
 }
+
+void Window::CreateContext()
+{
+}
+
+BOOL Window::MakeCurrent()
+{
+	return false;
+}
+
+BOOL Window::SwapBuffers()
+{
+	return false;
+}
