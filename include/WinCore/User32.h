@@ -83,10 +83,12 @@ LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT DispatchMessageA(const MSG* lpMsg);
 
+#define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
+
 #ifdef UNICODE
 #else
     #define RegisterClass    RegisterClassA
-    #define CreateWindowEx   CreateWindowExA 
+    #define CreateWindow     CreateWindowA 
     #define GetMessage       GetMessageA
     #define DefWindowProc    DefWindowProcA
     #define DispatchMessage  DispatchMessageA

@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
     RegisterClass(&wc);
 
     DWORD style = 0;
-    HWND  hwnd  = CreateWindowEx(0, wc.lpszClassName, "Title window", style, 100, 100, 800, 600, NULL, NULL, wc.hInstance, NULL);
+    HWND  hwnd  = CreateWindow(wc.lpszClassName, "Title window", style, 100, 100, 800, 600, NULL, NULL, wc.hInstance, NULL);
 
     HDC hDC = GetDC(hwnd);
 
