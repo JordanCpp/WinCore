@@ -12,6 +12,7 @@ public:
 	WindowManager();
 	~WindowManager();
 	void Append(HWND handle, Window* window);
+	void Remove(HWND handle);
 	Window* Find(HWND hwnd);
 	Window* FindNative(void* native);
 private:

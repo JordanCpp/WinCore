@@ -8,15 +8,22 @@ WindowManager::WindowManager()
 
 WindowManager::~WindowManager()
 {
-	for (container::iterator i = _windows.begin(); i != _windows.end(); i++)
-	{
-		delete i->second;
-	}
+	_windows.clear();
 }
 
 void WindowManager::Append(HWND handle, Window* window)
 {
 	_windows.insert(std::make_pair(handle, window));
+}
+
+void WindowManager::Remove(HWND handle)
+{
+	container::iterator i = _windows.find(handle);
+
+	if (i != _windows.end())
+	{
+		_windows.erase(i);
+	}
 }
 
 Window* WindowManager::Find(HWND hwnd)
@@ -33,9 +40,14 @@ Window* WindowManager::Find(HWND hwnd)
 
 Window* WindowManager::FindNative(void* native)
 {
+	if (!native)
+	{
+		return NULL;
+	}
+
 	for (container::iterator i = _windows.begin(); i != _windows.end(); i++)
 	{
-		if (i->second->Native() == native)
+		if (i->second && i->second->Native() == native)
 		{
 			return i->second;
 		}
