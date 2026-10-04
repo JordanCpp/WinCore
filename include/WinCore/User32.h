@@ -9,10 +9,6 @@ extern "C" {
 
 #include <WinCore/Types.h>
 
-#define WM_CREATE   0x0001
-#define WM_DESTROY  0x0002
-#define WM_PAINT    0x000F
-
 #define CS_VREDRAW  0x0001
 #define CS_HREDRAW  0x0002
 
@@ -52,7 +48,6 @@ typedef struct WNDCLASSA
 #else
     typedef WNDCLASSA WNDCLASS;
 #endif
-
 
 HMODULE GetModuleHandleA(LPCSTR lpModuleName);
 
