@@ -19,7 +19,12 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	_baseWindow.hInstance    = hInstance;
 	_baseWindow.lpParam      = lpParam;
 
-	_window = SDL_CreateWindow(_baseWindow.lpWindowName.c_str(), _baseWindow.X, _baseWindow.Y, _baseWindow.nWidth, _baseWindow.nHeight, SDL_WINDOW_OPENGL);
+	int x = (_baseWindow.X == CW_USEDEFAULT) ? SDL_WINDOWPOS_UNDEFINED : _baseWindow.X;
+	int y = (_baseWindow.Y == CW_USEDEFAULT) ? SDL_WINDOWPOS_UNDEFINED : _baseWindow.Y;
+	int w = (_baseWindow.nWidth  == CW_USEDEFAULT) ? 800 : _baseWindow.nWidth;
+	int h = (_baseWindow.nHeight == CW_USEDEFAULT) ? 600 : _baseWindow.nHeight;
+
+	_window = SDL_CreateWindow(_baseWindow.lpWindowName.c_str(), x, y, w, h, SDL_WINDOW_OPENGL);
 }
 
 Window::~Window()

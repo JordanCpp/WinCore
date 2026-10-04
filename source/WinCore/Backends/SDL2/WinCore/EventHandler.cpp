@@ -24,10 +24,7 @@ bool EventHandler::GetEvent(MSG& msg)
 
 	if (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_QUIT)
-		{
-			msg.message = WM_DESTROY;
-		}
+		_translator.Translate(event, msg);
 
 		return true;
 	}
@@ -41,10 +38,7 @@ bool EventHandler::WaitEvent(MSG& msg)
 
 	if (SDL_WaitEvent(&event))
 	{
-		if (event.type == SDL_QUIT)
-		{
-			msg.message = WM_DESTROY;
-		}
+		_translator.Translate(event, msg);
 
 		return true;
 	}

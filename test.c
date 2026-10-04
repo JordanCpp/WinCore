@@ -16,8 +16,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         printf("WM_PAINT\n");
         break;
 
-    case WM_DESTROY:
-        printf("WM_DESTROY\n");
+    case WM_QUIT:
+        printf("WM_QUIT\n");
         PostQuitMessage(0);
         break;
     }
@@ -37,7 +37,7 @@ int main()
     RegisterClass(&wc);
 
     DWORD style = 0;
-    HWND  hwnd  = CreateWindow(wc.lpszClassName, "Title window", style, 100, 100, 800, 600, NULL, NULL, wc.hInstance, NULL);
+    HWND  hwnd  = CreateWindow(wc.lpszClassName, "Title window", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, wc.hInstance, NULL);
 
     HDC hDC = GetDC(hwnd);
 

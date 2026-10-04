@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(WinCore)
 
-set(BACKEND_SDL3 ON)
+set(BACKEND_SDL2 ON)
 
 if (BACKEND_SDL2)
     if (WIN32)
@@ -65,6 +65,7 @@ file(GLOB WINCORE_SOURCES
 if (BACKEND_SDL2)
     file(GLOB BACKEND_SOURCES 
         "source/WinCore/Backends/SDL2/WinCore/EventHandler.cpp"
+        "source/WinCore/Backends/SDL2/WinCore/EventTranslator.cpp"
         "source/WinCore/Backends/SDL2/WinCore/Initializer.cpp"
         "source/WinCore/Backends/SDL2/WinCore/Window.cpp")
 endif()

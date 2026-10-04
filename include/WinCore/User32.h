@@ -16,6 +16,8 @@ extern "C" {
 #define CS_VREDRAW  0x0001
 #define CS_HREDRAW  0x0002
 
+#define CW_USEDEFAULT ((int)0x80000000)
+
 typedef struct POINT
 {
     LONG  x;

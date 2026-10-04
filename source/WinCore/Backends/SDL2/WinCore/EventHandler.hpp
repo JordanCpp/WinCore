@@ -4,6 +4,7 @@
 #define WinCore_SDL2_EventHandler_hpp
 
 #include <WinCore/Windows.h>
+#include <WinCore/Backends/SDL2/WinCore/EventTranslator.hpp>
 
 class EventHandler
 {
@@ -14,7 +15,8 @@ public:
 	bool GetEvent(MSG& msg);
 	bool WaitEvent(MSG& msg);
 private:
-	bool _running;
+	bool            _running;
+	EventTranslator _translator;
 };
 
 #endif

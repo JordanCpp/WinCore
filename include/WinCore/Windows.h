@@ -3,6 +3,8 @@
 #ifndef WinCore_Windows_h
 #define WinCore_Windows_h
 
+#include <WinCore/Keys.h>
+#include <WinCore/WinMsg.h>
 #include <WinCore/User32.h>
 #include <WinCore/Gdi32.h>
 
