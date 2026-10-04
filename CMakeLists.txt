@@ -94,4 +94,5 @@ if (BACKEND_SDL3)
 endif()
 
 add_executable(test "test.c")
+target_link_options(test PRIVATE "-Wl,--allow-multiple-definition")
 target_link_libraries(test WinCore opengl32)
