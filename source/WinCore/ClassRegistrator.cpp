@@ -17,8 +17,8 @@ void ClassRegistrator::Append(const WNDCLASSA* wndClass)
 		window.hIcon         = wndClass->hIcon;
 		window.hInstance     = wndClass->hInstance;
 		window.lpfnWndProc   = wndClass->lpfnWndProc;
-		window.lpszClassName = wndClass->lpszClassName;
-		window.lpszMenuName  = wndClass->lpszMenuName;
+		window.lpszClassName = wndClass->lpszClassName ? wndClass->lpszClassName : "";
+		window.lpszMenuName  = wndClass->lpszMenuName  ? wndClass->lpszMenuName  : "";
 
 		_classes.insert(std::make_pair(wndClass->lpszClassName, window));
 	}
