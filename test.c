@@ -16,8 +16,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         printf("WM_PAINT\n");
         break;
 
-    case WM_QUIT:
-        printf("WM_QUIT\n");
+    case WM_CLOSE:
+        printf("WM_CLOSE\n");
+        PostQuitMessage(0);
+        break;
+
+    case WM_DESTROY:
+        printf("WM_DESTROY\n");
         PostQuitMessage(0);
         break;
     }
@@ -30,8 +35,15 @@ int main()
     WNDCLASS wc;
     MSG      msg;
 
-    wc.lpszClassName = "asdad";
-    wc.lpszMenuName  = "asdad";
+    wc.style         = 0;
+    wc.cbClsExtra    = 0;
+    wc.cbWndExtra    = 0;
+    wc.hInstance     = NULL;
+    wc.hIcon         = NULL;
+    wc.hCursor       = NULL;
+    wc.hbrBackground = NULL;
+    wc.lpszClassName = "WinCoreDemoClass";
+    wc.lpszMenuName  = "MainMenu";
     wc.lpfnWndProc   = WndProc;
 
     RegisterClass(&wc);

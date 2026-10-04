@@ -15,7 +15,7 @@ void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
     switch (sdlEvent.type)
     {
     case SDL_QUIT:
-        winMsg.message = WM_QUIT;
+        winMsg.message = WM_CLOSE;
         break;
 
     case SDL_WINDOWEVENT:

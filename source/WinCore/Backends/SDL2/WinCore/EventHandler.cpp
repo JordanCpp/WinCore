@@ -18,8 +18,21 @@ void EventHandler::StopEvents()
 	_running = false;
 }
 
+void EventHandler::PushMessage(const MSG& msg)
+{
+	_manualEvents.push(msg);
+}
+
 bool EventHandler::GetEvent(MSG& msg)
 {
+	if (!_manualEvents.empty())
+	{
+		msg = _manualEvents.front();
+		_manualEvents.pop();
+
+		return true;
+	}
+
 	SDL_Event event = {0};
 
 	if (SDL_PollEvent(&event))
@@ -34,6 +47,14 @@ bool EventHandler::GetEvent(MSG& msg)
 
 bool EventHandler::WaitEvent(MSG& msg)
 {
+	if (!_manualEvents.empty())
+	{
+		msg = _manualEvents.front();
+		_manualEvents.pop();
+
+		return true;
+	}
+
 	SDL_Event event = { 0 };
 
 	if (SDL_WaitEvent(&event))

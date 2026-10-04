@@ -75,6 +75,8 @@ BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UI
 
 			if (msg.message == WM_QUIT)
 			{
+				_eventHandler.StopEvents();
+
 				return false;
 			}
 
@@ -87,7 +89,11 @@ BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UI
 
 void Application::PostQuitMessageImpl(int nExitCode)
 {
-	_eventHandler.StopEvents();
+	MSG quitMsg     = { 0 };
+	quitMsg.message = WM_QUIT;
+	quitMsg.wParam  = (WPARAM)nExitCode;
+
+	_eventHandler.PushMessage(quitMsg);
 }
 
 LRESULT Application::DefWindowProcAImpl(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
