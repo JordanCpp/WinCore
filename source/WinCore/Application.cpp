@@ -14,45 +14,75 @@ Application::~Application()
 
 ATOM Application::RegisterClassImpl(const WNDCLASSA* wndClass)
 {
-	_classRegistrator.Append(wndClass);
+	if (!wndClass) return 0;
 
+	_classRegistrator.Append(wndClass);
 	return true;
 }
 
 HWND Application::CreateWindowExAImpl(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
 	Window* window = _windowCreator.Create(dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+	if (!window) return NULL;
 
-	_windowManager.Append((HWND)window, window);
+	HWND hFakeWnd = (HWND)window;
+
+	_windowManager.Append(hFakeWnd, window);
 
 	WindowClassA windowClass;
 
 	if (_classRegistrator.Find(lpClassName, windowClass))
 	{
-		windowClass.lpfnWndProc((HWND)window, WM_CREATE, 0, 0);
+		CREATESTRUCTA cs;
+		cs.lpCreateParams = lpParam;
+		cs.hInstance      = hInstance;
+		cs.hMenu          = hMenu;
+		cs.hwndParent     = hWndParent;
+		cs.cy             = nHeight;
+		cs.cx             = nWidth;
+		cs.y              = Y;
+		cs.x              = X;
+		cs.style          = dwStyle;
+		cs.lpszName       = lpWindowName;
+		cs.lpszClass      = lpClassName;
+		cs.dwExStyle      = dwExStyle;
+
+		windowClass.lpfnWndProc(hFakeWnd, WM_CREATE, 0, (LPARAM)&cs);
 	}
 
-	return (HWND)window;
+	return hFakeWnd;
 }
 
 BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 {
+	if (!lpMsg)
+	{
+		return false;
+	}
+
 	MSG msg = { 0 };
 
 	if (_eventHandler.IsRunning())
 	{
 		if (_eventHandler.WaitEvent(msg))
 		{
-			lpMsg->hwnd    = NULL;
+			lpMsg->hwnd    = msg.hwnd;
 			lpMsg->message = msg.message;
 			lpMsg->wParam  = msg.wParam;
 			lpMsg->lParam  = msg.lParam;
 			lpMsg->time    = msg.time;
 			lpMsg->pt      = msg.pt;
+
+			if (msg.message == WM_QUIT)
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 
-	return _eventHandler.IsRunning();
+	return false;
 }
 
 void Application::PostQuitMessageImpl(int nExitCode)
@@ -62,14 +92,42 @@ void Application::PostQuitMessageImpl(int nExitCode)
 
 LRESULT Application::DefWindowProcAImpl(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	return LRESULT();
+	if (Msg == WM_CLOSE)
+	{
+		_eventHandler.StopEvents();
+	}
+
+	return 0;
 }
 
 LRESULT Application::DispatchMessageA(const MSG* lpMsg)
 {
-	for (ClassRegistrator::container::const_iterator i = _classRegistrator.GetClasses().begin(); i != _classRegistrator.GetClasses().end(); i++)
+	if (!lpMsg)
 	{
-		i->second.lpfnWndProc(NULL, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+
+		return 0;
+	}
+
+	if (lpMsg->hwnd)
+	{
+		Window* window = _windowManager.Find(lpMsg->hwnd);
+
+		if (window)
+		{
+			WindowClassA windowClass;
+
+			if (_classRegistrator.Find(window->GetClassName(), windowClass))
+			{
+				return windowClass.lpfnWndProc(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+			}
+		}
+	}
+	else
+	{
+		for (ClassRegistrator::container::const_iterator i = _classRegistrator.GetClasses().begin(); i != _classRegistrator.GetClasses().end(); i++)
+		{
+			i->second.lpfnWndProc(NULL, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+		}
 	}
 
 	return true;
@@ -98,7 +156,7 @@ BOOL Application::wglMakeCurrentImpl(HDC hdc, HGLRC hglrc)
 
 	if (window)
 	{
-		window->MakeCurrent();
+		return window->MakeCurrent();
 	}
 
 	return false;
