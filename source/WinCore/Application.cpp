@@ -133,7 +133,7 @@ LRESULT Application::DefWindowProcAImpl(HWND hWnd, UINT Msg, WPARAM wParam, LPAR
 	return 0;
 }
 
-LRESULT Application::DispatchMessageA(const MSG* lpMsg)
+LRESULT Application::DispatchMessageAImpl(const MSG* lpMsg)
 {
 	if (!lpMsg)
 	{
@@ -163,6 +163,11 @@ LRESULT Application::DispatchMessageA(const MSG* lpMsg)
 		}
 	}
 
+	return true;
+}
+
+BOOL Application::TranslateMessageImpl(const MSG* lpMsg)
+{
 	return true;
 }
 

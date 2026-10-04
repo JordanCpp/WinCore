@@ -40,7 +40,12 @@ LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 
 LRESULT DispatchMessageA(const MSG* lpMsg)
 {
-	return MainApplication().DispatchMessageA(lpMsg);
+	return MainApplication().DispatchMessageAImpl(lpMsg);
+}
+
+BOOL TranslateMessage(const MSG* lpMsg)
+{
+	return MainApplication().TranslateMessageImpl(lpMsg);
 }
 
 HMODULE GetModuleHandleA(LPCSTR lpModuleName)

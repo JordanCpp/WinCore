@@ -72,7 +72,7 @@ int main()
                 break;
             }
 
-            //TranslateMessage(&msg);
+            TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
 

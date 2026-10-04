@@ -20,7 +20,8 @@ public:
 	BOOL PeekMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
 	void PostQuitMessageImpl(int nExitCode);
 	LRESULT DefWindowProcAImpl(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-	LRESULT DispatchMessageA(const MSG* lpMsg);
+	LRESULT DispatchMessageAImpl(const MSG* lpMsg);
+	BOOL TranslateMessageImpl(const MSG* lpMsg);
 	HDC GetDCImpl(HWND hWnd);
 	HGLRC wglCreateContextImpl(HDC hdc);
 	BOOL wglMakeCurrentImpl(HDC hdc, HGLRC hglrc);
