@@ -36,3 +36,8 @@ bool EventHandler::GetEvent(MSG& msg)
 {
 	return false;
 }
+
+bool EventHandler::WaitEvent(MSG& msg)
+{
+	return false;
+}

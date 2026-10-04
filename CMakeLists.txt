@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(WinCore)
 
-set(BACKEND_SDL2 ON)
+set(BACKEND_SDL3 ON)
 
 if (BACKEND_SDL2)
     if (WIN32)

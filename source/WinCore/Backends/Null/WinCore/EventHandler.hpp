@@ -27,6 +27,7 @@ public:
 	bool IsRunning();
 	void StopEvents();
 	bool GetEvent(MSG& msg);
+	bool WaitEvent(MSG& msg);
 private:
 	bool _running;
 };

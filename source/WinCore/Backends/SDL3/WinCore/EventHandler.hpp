@@ -28,6 +28,7 @@ public:
 	bool IsRunning();
 	void StopEvents();
 	bool GetEvent(MSG& msg);
+	bool WaitEvent(MSG& msg);
 	void Pump(std::deque<MSG> messages);
 private:
 	bool _running;

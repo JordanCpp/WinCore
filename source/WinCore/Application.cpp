@@ -56,7 +56,7 @@ BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UI
 
 	if (_eventHandler.IsRunning())
 	{
-		if (_eventHandler.GetEvent(msg))
+		if (_eventHandler.WaitEvent(msg))
 		{
 			lpMsg->hwnd    = NULL;
 			lpMsg->message = msg.message;

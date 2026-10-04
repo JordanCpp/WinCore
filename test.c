@@ -40,7 +40,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
-int main(int argc, char* argv[])
+int main()
 {
     WNDCLASS wc;
     MSG      msg;

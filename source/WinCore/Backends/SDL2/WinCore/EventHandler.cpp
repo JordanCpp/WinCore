@@ -49,3 +49,20 @@ bool EventHandler::GetEvent(MSG& msg)
 
 	return false;
 }
+
+bool EventHandler::WaitEvent(MSG& msg)
+{
+	SDL_Event event = { 0 };
+
+	if (SDL_WaitEvent(&event))
+	{
+		if (event.type == SDL_QUIT)
+		{
+			msg.message = WM_DESTROY;
+		}
+
+		return true;
+	}
+
+	return false;
+}
