@@ -1,9 +1,9 @@
 // Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
 
-#ifndef WinCore_SDL2_EventTranslator_hpp
-#define WinCore_SDL2_EventTranslator_hpp
+#ifndef WinCore_SDL3_EventTranslator_hpp
+#define WinCore_SDL3_EventTranslator_hpp
 
-#include <SDL.h>
+#include <SDL3/SDL_events.h>
 #include <WinCore/Windows.h>
 
 class EventTranslator

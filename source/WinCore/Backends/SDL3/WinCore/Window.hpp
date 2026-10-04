@@ -13,6 +13,7 @@ public:
 	Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 	~Window();
 	void* Native();
+	const std::string& GetClassName() const;
 	void CreateContext();
 	BOOL MakeCurrent();
 	BOOL SwapBuffers();

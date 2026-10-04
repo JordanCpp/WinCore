@@ -5,6 +5,7 @@
 
 #include <deque>
 #include <WinCore/Windows.h>
+#include <WinCore/Backends/SDL3/WinCore/EventTranslator.hpp>
 
 class EventHandler
 {
@@ -12,11 +13,13 @@ public:
 	EventHandler();
 	bool IsRunning();
 	void StopEvents();
-	bool GetEvent(MSG& msg);
+	void PushMessage(const MSG& msg);
+	bool GetEvent(MSG& msg, bool bRemove);
 	bool WaitEvent(MSG& msg);
-	void Pump(std::deque<MSG> messages);
 private:
-	bool _running;
+	bool            _running;
+	EventTranslator _translator;
+	std::deque<MSG> _manualEvents;
 };
 
 #endif

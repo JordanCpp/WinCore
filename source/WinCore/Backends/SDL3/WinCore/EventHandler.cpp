@@ -1,6 +1,5 @@
 // Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
 
-#include <SDL3/SDL_events.h>
 #include <WinCore/EventHandler.hpp>
 
 EventHandler::EventHandler() :
@@ -18,15 +17,34 @@ void EventHandler::StopEvents()
 	_running = false;
 }
 
-bool EventHandler::GetEvent(MSG& msg)
+void EventHandler::PushMessage(const MSG& msg)
 {
+	_manualEvents.push_back(msg);
+}
+
+bool EventHandler::GetEvent(MSG& msg, bool bRemove)
+{
+	if (!_manualEvents.empty())
+	{
+		msg = _manualEvents.front();
+
+		if (bRemove)
+		{
+			_manualEvents.pop_front();
+		}
+
+		return true;
+	}
+
 	SDL_Event event = { 0 };
 
 	if (SDL_PollEvent(&event))
 	{
-		if (event.type == SDL_EVENT_QUIT)
+		_translator.Translate(event, msg);
+
+		if (!bRemove)
 		{
-			msg.message = WM_DESTROY;
+			_manualEvents.push_front(msg);
 		}
 
 		return true;
@@ -37,41 +55,22 @@ bool EventHandler::GetEvent(MSG& msg)
 
 bool EventHandler::WaitEvent(MSG& msg)
 {
+	if (!_manualEvents.empty())
+	{
+		msg = _manualEvents.front();
+		_manualEvents.pop_front();
+
+		return true;
+	}
+
 	SDL_Event event = { 0 };
 
 	if (SDL_WaitEvent(&event))
 	{
-		if (event.type == SDL_EVENT_QUIT)
-		{
-			msg.message = WM_DESTROY;
-		}
+		_translator.Translate(event, msg);
 
 		return true;
 	}
 
 	return false;
-}
-
-void EventHandler::Pump(std::deque<MSG> messages)
-{
-	SDL_Event event = { 0 };
-
-	while (SDL_PollEvent(&event))
-	{
-		MSG msg = { 0 };
-
-		msg.hwnd = (HWND)SDL_GetWindowFromID(event.window.windowID);
-
-		switch (event.type)
-		{
-		case SDL_EVENT_QUIT:
-			msg.message = WM_DESTROY;
-			messages.push_back(msg);
-			break;
-		case SDL_EVENT_WINDOW_EXPOSED:
-			msg.message = WM_PAINT;
-			messages.push_back(msg);
-			break;
-		}
-	}
 }

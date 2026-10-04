@@ -1,0 +1,123 @@
+// Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
+
+#include <WinCore/EventTranslator.hpp>
+
+void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
+{
+    winMsg.hwnd = NULL;
+    winMsg.wParam = 0;
+    winMsg.lParam = 0;
+    // В SDL3 timestamp измеряется в наносекундах. Переводим в миллисекунды для WinAPI.
+    winMsg.time = static_cast<DWORD>(sdlEvent.common.timestamp / 1000000);
+    winMsg.pt.x = 0;
+    winMsg.pt.y = 0;
+
+    switch (sdlEvent.type)
+    {
+    case SDL_EVENT_QUIT:
+    case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
+        winMsg.message = WM_CLOSE;
+        break;
+
+    case SDL_EVENT_WINDOW_EXPOSED:
+        winMsg.message = WM_PAINT;
+        break;
+
+    case SDL_EVENT_KEY_DOWN:
+        winMsg.message = WM_KEYDOWN;
+        winMsg.wParam = TranslateKey(sdlEvent.key.key); // Прямой доступ без .keysym.sym
+        break;
+
+    case SDL_EVENT_KEY_UP:
+        winMsg.message = WM_KEYUP;
+        winMsg.wParam = TranslateKey(sdlEvent.key.key); // Прямой доступ без .keysym.sym
+        break;
+
+    case SDL_EVENT_MOUSE_MOTION:
+        winMsg.message = WM_MOUSEMOVE;
+        winMsg.pt.x = static_cast<LONG>(sdlEvent.motion.x);
+        winMsg.pt.y = static_cast<LONG>(sdlEvent.motion.y);
+        break;
+
+    default:
+        winMsg.message = WM_NULL;
+        break;
+    }
+}
+
+WPARAM EventTranslator::TranslateKey(SDL_Keycode sdlKey)
+{
+    // В SDL3 коды букв SDLK_A - SDLK_Z теперь в верхнем регистре
+    if (sdlKey >= SDLK_A && sdlKey <= SDLK_Z)
+    {
+        return 'A' + (sdlKey - SDLK_A);
+    }
+
+    if (sdlKey >= SDLK_0 && sdlKey <= SDLK_9)
+    {
+        return '0' + (sdlKey - SDLK_0);
+    }
+
+    switch (sdlKey)
+    {
+        // Control & System Keys
+    case SDLK_ESCAPE:    return VK_ESCAPE;
+    case SDLK_RETURN:    return VK_RETURN;
+    case SDLK_BACKSPACE: return VK_BACK;
+    case SDLK_TAB:       return VK_TAB;
+    case SDLK_SPACE:     return VK_SPACE;
+
+        // Modifiers
+    case SDLK_LSHIFT:    return VK_LSHIFT;
+    case SDLK_RSHIFT:    return VK_RSHIFT;
+    case SDLK_LCTRL:     return VK_LCONTROL;
+    case SDLK_RCTRL:     return VK_RCONTROL;
+    case SDLK_LALT:      return VK_LMENU;
+    case SDLK_RALT:      return VK_RMENU;
+
+        // Navigation
+    case SDLK_UP:        return VK_UP;
+    case SDLK_DOWN:      return VK_DOWN;
+    case SDLK_LEFT:      return VK_LEFT;
+    case SDLK_RIGHT:     return VK_RIGHT;
+    case SDLK_INSERT:    return VK_INSERT;
+    case SDLK_DELETE:    return VK_DELETE;
+    case SDLK_HOME:      return VK_HOME;
+    case SDLK_END:       return VK_END;
+    case SDLK_PAGEUP:    return VK_PRIOR;
+    case SDLK_PAGEDOWN:  return VK_NEXT;
+
+        // Function keys
+    case SDLK_F1:        return VK_F1;
+    case SDLK_F2:        return VK_F2;
+    case SDLK_F3:        return VK_F3;
+    case SDLK_F4:        return VK_F4;
+    case SDLK_F5:        return VK_F5;
+    case SDLK_F6:        return VK_F6;
+    case SDLK_F7:        return VK_F7;
+    case SDLK_F8:        return VK_F8;
+    case SDLK_F9:        return VK_F9;
+    case SDLK_F10:       return VK_F10;
+    case SDLK_F11:       return VK_F11;
+    case SDLK_F12:       return VK_F12;
+
+        // Numpad
+    case SDLK_KP_0:        return VK_NUMPAD0;
+    case SDLK_KP_1:        return VK_NUMPAD1;
+    case SDLK_KP_2:        return VK_NUMPAD2;
+    case SDLK_KP_3:        return VK_NUMPAD3;
+    case SDLK_KP_4:        return VK_NUMPAD4;
+    case SDLK_KP_5:        return VK_NUMPAD5;
+    case SDLK_KP_6:        return VK_NUMPAD6;
+    case SDLK_KP_7:        return VK_NUMPAD7;
+    case SDLK_KP_8:        return VK_NUMPAD8;
+    case SDLK_KP_9:        return VK_NUMPAD9;
+    case SDLK_KP_MULTIPLY: return VK_MULTIPLY;
+    case SDLK_KP_PLUS:     return VK_ADD;
+    case SDLK_KP_MINUS:    return VK_SUBTRACT;
+    case SDLK_KP_DIVIDE:   return VK_DIVIDE;
+    case SDLK_KP_ENTER:    return VK_RETURN;
+
+    default:               return 0;
+    }
+}
