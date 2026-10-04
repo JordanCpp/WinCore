@@ -7,8 +7,8 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	_glContext(NULL)
 {
 	_baseWindow.dwExStyle    = dwExStyle;
-	_baseWindow.lpClassName  = lpClassName;
-	_baseWindow.lpWindowName = lpWindowName;
+	_baseWindow.lpClassName  = lpClassName  ? lpClassName  : "";
+	_baseWindow.lpWindowName = lpWindowName ? lpWindowName : "";
 	_baseWindow.dwStyle      = dwStyle;
 	_baseWindow.X            = X;
 	_baseWindow.Y            = Y;
@@ -32,11 +32,13 @@ Window::~Window()
 	if (_glContext)
 	{
 		SDL_GL_DeleteContext(_glContext);
+		_glContext = NULL;
 	}
 
 	if (_window)
 	{
 		SDL_DestroyWindow(_window);
+		_window = NULL;
 	}
 }
 
@@ -45,19 +47,37 @@ void* Window::Native()
 	return _window;
 }
 
+const std::string& Window::GetClassName() const
+{
+	return _baseWindow.lpClassName;
+}
+
 void Window::CreateContext()
 {
-	_glContext = SDL_GL_CreateContext(_window);
+	if (_window && !_glContext)
+	{
+		_glContext = SDL_GL_CreateContext(_window);
+	}
 }
 
 BOOL Window::MakeCurrent()
 {
+	if (_window && _glContext)
+	{
+		return (SDL_GL_MakeCurrent(_window, _glContext) == 0);
+	}
+
 	return false;
 }
 
 BOOL Window::SwapBuffers()
 {
-	SDL_GL_SwapWindow(_window);
+	if (_window)
+	{
+		SDL_GL_SwapWindow(_window);
 
-	return true;
+		return true;
+	}
+
+	return false;
 }
