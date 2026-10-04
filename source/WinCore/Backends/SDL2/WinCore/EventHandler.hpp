@@ -3,7 +3,7 @@
 #ifndef WinCore_SDL2_EventHandler_hpp
 #define WinCore_SDL2_EventHandler_hpp
 
-#include <queue>
+#include <deque>
 #include <WinCore/Windows.h>
 #include <WinCore/Backends/SDL2/WinCore/EventTranslator.hpp>
 
@@ -14,12 +14,12 @@ public:
 	bool IsRunning();
 	void StopEvents();
 	void PushMessage(const MSG& msg);
-	bool GetEvent(MSG& msg);
+	bool GetEvent(MSG& msg, bool bRemove);
 	bool WaitEvent(MSG& msg);
 private:
 	bool            _running;
 	EventTranslator _translator;
-	std::queue<MSG> _manualEvents;
+	std::deque<MSG> _manualEvents;
 };
 
 #endif

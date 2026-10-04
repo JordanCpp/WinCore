@@ -25,6 +25,9 @@ typedef struct tagCREATESTRUCTA
     DWORD     dwExStyle;      // Extended style flags for the window
 } CREATESTRUCTA, * LPCREATESTRUCTA;
 
+#define PM_NOREMOVE 0x0000
+#define PM_REMOVE   0x0001
+
 #define CS_VREDRAW  0x0001
 #define CS_HREDRAW  0x0002
 
@@ -75,6 +78,8 @@ HWND CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, D
 
 BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
 
+BOOL PeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
+
 void PostQuitMessage(int nExitCode);
 
 LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
@@ -88,6 +93,7 @@ LRESULT DispatchMessageA(const MSG* lpMsg);
     #define RegisterClass    RegisterClassA
     #define CreateWindow     CreateWindowA 
     #define GetMessage       GetMessageA
+    #define PeekMessage      PeekMessageA
     #define DefWindowProc    DefWindowProcA
     #define DispatchMessage  DispatchMessageA
 #endif

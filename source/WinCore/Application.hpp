@@ -17,6 +17,7 @@ public:
 	ATOM RegisterClassImpl(const WNDCLASSA* wndClass);
 	HWND CreateWindowExAImpl(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 	BOOL GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
+	BOOL PeekMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
 	void PostQuitMessageImpl(int nExitCode);
 	LRESULT DefWindowProcAImpl(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 	LRESULT DispatchMessageA(const MSG* lpMsg);

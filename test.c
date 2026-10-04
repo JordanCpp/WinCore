@@ -61,13 +61,28 @@ int main()
 
     glViewport(0, 0, 800, 600);
 
-    while (GetMessage(&msg, NULL, 0, 0))
+    msg.message = WM_NULL;
+
+    while (msg.message != WM_QUIT)
     {
-        DispatchMessage(&msg);
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+            {
+                break;
+            }
 
-        glClearColor(255, 0.0f, 0.0f, 0.0f);
+            //TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+
+        if (msg.message == WM_QUIT)
+        {
+            break;
+        }
+
+        glClearColor(1.0f, 0.0f, 0.0f, 0.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
         SwapBuffers(hDC);
     }
 

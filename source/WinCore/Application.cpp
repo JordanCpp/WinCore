@@ -87,6 +87,33 @@ BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UI
 	return false;
 }
 
+BOOL Application::PeekMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
+{
+	if (!lpMsg) return false;
+
+	MSG msg = { 0 };
+	bool bRemove = (wRemoveMsg == PM_REMOVE);
+
+	if (_eventHandler.GetEvent(msg, bRemove))
+	{
+		lpMsg->hwnd = msg.hwnd;
+		lpMsg->message = msg.message;
+		lpMsg->wParam = msg.wParam;
+		lpMsg->lParam = msg.lParam;
+		lpMsg->time = msg.time;
+		lpMsg->pt = msg.pt;
+
+		if (msg.message == WM_QUIT && bRemove)
+		{
+			_eventHandler.StopEvents();
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
 void Application::PostQuitMessageImpl(int nExitCode)
 {
 	MSG quitMsg     = { 0 };

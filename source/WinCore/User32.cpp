@@ -23,6 +23,11 @@ BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 	return MainApplication().GetMessageAImpl(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
 }
 
+BOOL PeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
+{
+	return MainApplication().PeekMessageAImpl(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+}
+
 void PostQuitMessage(int nExitCode)
 {
 	MainApplication().PostQuitMessageImpl(nExitCode);

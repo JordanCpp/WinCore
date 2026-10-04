@@ -20,24 +20,33 @@ void EventHandler::StopEvents()
 
 void EventHandler::PushMessage(const MSG& msg)
 {
-	_manualEvents.push(msg);
+	_manualEvents.push_back(msg);
 }
 
-bool EventHandler::GetEvent(MSG& msg)
+bool EventHandler::GetEvent(MSG& msg, bool bRemove)
 {
 	if (!_manualEvents.empty())
 	{
 		msg = _manualEvents.front();
-		_manualEvents.pop();
+
+		if (bRemove)
+		{
+			_manualEvents.pop_front();
+		}
 
 		return true;
 	}
 
-	SDL_Event event = {0};
+	SDL_Event event = { 0 };
 
 	if (SDL_PollEvent(&event))
 	{
 		_translator.Translate(event, msg);
+
+		if (!bRemove)
+		{
+			_manualEvents.push_front(msg);
+		}
 
 		return true;
 	}
@@ -50,7 +59,7 @@ bool EventHandler::WaitEvent(MSG& msg)
 	if (!_manualEvents.empty())
 	{
 		msg = _manualEvents.front();
-		_manualEvents.pop();
+		_manualEvents.pop_front();
 
 		return true;
 	}
