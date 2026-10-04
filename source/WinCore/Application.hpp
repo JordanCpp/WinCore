@@ -8,6 +8,7 @@
 #include <WinCore/WindowCreator.hpp>
 #include <WinCore/Initializer.hpp>
 #include <WinCore/EventHandler.hpp>
+#include <WinCore/SharedCreator.hpp>
 
 class Application
 {
@@ -26,12 +27,18 @@ public:
 	HGLRC wglCreateContextImpl(HDC hdc);
 	BOOL wglMakeCurrentImpl(HDC hdc, HGLRC hglrc);
 	BOOL SwapBuffers(HDC hdc);
+	int ChoosePixelFormatImpl(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd);
+	BOOL SetPixelFormatImpl(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd);
+	HMODULE LoadLibraryAImpl(LPCSTR lpLibFileName);
+	BOOL FreeLibraryImpl(HMODULE hLibModule);
+	FARPROC GetProcAddressImpl(HMODULE hModule, LPCSTR  lpProcName);
 private:
 	Initializer      _initializer;
 	EventHandler     _eventHandler;
 	ClassRegistrator _classRegistrator;
 	WindowCreator    _windowCreator;
 	WindowManager    _windowManager;
+	SharedCreator    _sharedCreator;
 };
 
 Application& MainApplication();

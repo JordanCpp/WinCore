@@ -59,14 +59,18 @@ file(GLOB WINCORE_SOURCES
 "source/WinCore/WindowManager.cpp"
 "source/WinCore/WindowClassA.cpp"
 "source/WinCore/WindowCreator.cpp"
+"source/WinCore/SharedCreator.cpp"
 "source/WinCore/User32.cpp"
-"source/WinCore/Gdi32.cpp")
+"source/WinCore/Gdi32.cpp"
+"source/WinCore/Kernel32.cpp"
+"source/WinCore/OpenGL32.cpp")
 
 if (BACKEND_SDL2)
     file(GLOB BACKEND_SOURCES 
         "source/WinCore/Backends/SDL2/WinCore/EventHandler.cpp"
         "source/WinCore/Backends/SDL2/WinCore/EventTranslator.cpp"
         "source/WinCore/Backends/SDL2/WinCore/Initializer.cpp"
+        "source/WinCore/Backends/SDL2/WinCore/Shared.cpp"
         "source/WinCore/Backends/SDL2/WinCore/Window.cpp")
 endif()
 

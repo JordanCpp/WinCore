@@ -212,6 +212,51 @@ BOOL Application::SwapBuffers(HDC hdc)
 	return false;
 }
 
+int Application::ChoosePixelFormatImpl(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd)
+{
+	if (!hdc || !ppfd)
+	{
+		return 0;
+	}
+
+	return 1;
+}
+
+BOOL Application::SetPixelFormatImpl(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd)
+{
+	if (!hdc || format <= 0 || !ppfd) return false;
+
+	Window* window = _windowManager.Find((HWND)hdc);
+
+	if (window)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+HMODULE Application::LoadLibraryAImpl(LPCSTR lpLibFileName)
+{
+	return (HMODULE)_sharedCreator.Create(lpLibFileName);
+}
+
+BOOL Application::FreeLibraryImpl(HMODULE hLibModule)
+{
+	Shared* shared = (Shared*)(hLibModule);
+
+	shared->Unload();
+
+	return true;
+}
+
+FARPROC Application::GetProcAddressImpl(HMODULE hModule, LPCSTR lpProcName)
+{
+	Shared* shared = (Shared*)(hModule);
+
+	return (FARPROC)shared->GetFunction(lpProcName);
+}
+
 Application& MainApplication()
 {
 	return _application;

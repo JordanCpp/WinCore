@@ -7,5 +7,7 @@
 #include <WinCore/WinMsg.h>
 #include <WinCore/User32.h>
 #include <WinCore/Gdi32.h>
+#include <WinCore/Kernel32.h>
+#include <WinCore/OpenGL32.h>
 
 #endif

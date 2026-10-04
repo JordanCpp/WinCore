@@ -1,7 +1,9 @@
 // Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
 
+#define OPENGL_IMPLEMENTATION
+#include "OpenGL.h"
+
 #include <stdio.h>
-#include <WinCore/GL/GL.h>
 #include <WinCore/Windows.h>
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -49,15 +51,37 @@ int main()
     RegisterClass(&wc);
 
     DWORD style = 0;
-    HWND  hwnd  = CreateWindow(wc.lpszClassName, "Title window", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, wc.hInstance, NULL);
+    HWND  hwnd = CreateWindow(wc.lpszClassName, "Title window", style, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, wc.hInstance, NULL);
 
     HDC hDC = GetDC(hwnd);
 
     PIXELFORMATDESCRIPTOR pfd;
+    pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+    pfd.nVersion = 1;
+    pfd.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    pfd.iPixelType = PFD_TYPE_RGBA;
+    pfd.cColorBits = 32;
+    pfd.cRedBits = 0; pfd.cRedShift = 0;
+    pfd.cGreenBits = 0; pfd.cGreenShift = 0;
+    pfd.cBlueBits = 0; pfd.cBlueShift = 0;
+    pfd.cAlphaBits = 0; pfd.cAlphaShift = 0;
+    pfd.cAccumBits = 0;
+    pfd.cAccumRedBits = 0; pfd.cAccumGreenBits = 0; pfd.cAccumBlueBits = 0; pfd.cAccumAlphaBits = 0;
+    pfd.cDepthBits = 24;
+    pfd.cStencilBits = 8;
+    pfd.cAuxBuffers = 0;
+    pfd.iLayerType = PFD_MAIN_PLANE;
+    pfd.bReserved = 0;
+    pfd.dwLayerMask = 0; pfd.dwVisibleMask = 0; pfd.dwDamageMask = 0;
+
+    int pixelFormat = ChoosePixelFormat(hDC, &pfd);
+    SetPixelFormat(hDC, pixelFormat, &pfd);
 
     HGLRC hRC = wglCreateContext(hDC);
 
     wglMakeCurrent(hDC, hRC);
+
+    OpenGL_Compatibility_Init(1, 2);
 
     glViewport(0, 0, 800, 600);
 

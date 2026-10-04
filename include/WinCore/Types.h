@@ -15,6 +15,8 @@
     #define WINAPI
 #endif
 
+typedef void* PROC;
+
 typedef void* LPVOID;
 typedef void* HANDLE;
 typedef HANDLE HWND;

@@ -9,12 +9,12 @@ HDC GetDC(HWND hWnd)
 
 int ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd)
 {
-	return 0;
+	return MainApplication().ChoosePixelFormatImpl(hdc, ppfd);
 }
 
 BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd)
 {
-	return 0;
+	return MainApplication().SetPixelFormatImpl(hdc, format, ppfd);
 }
 
 HGLRC wglCreateContext(HDC hdc)
