@@ -19,7 +19,7 @@ void Shared::Unload()
 
 void* Shared::GetFunction(const char* name)
 {
-	void* func = SDL_LoadFunction(_object, name);
+	void* func = (void*)SDL_LoadFunction(_object, name);
 	
 	return func;
 }
