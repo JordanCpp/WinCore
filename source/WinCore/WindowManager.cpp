@@ -55,3 +55,20 @@ Window* WindowManager::FindNative(void* native)
 
 	return NULL;
 }
+
+BOOL WindowManager::Destroy(HWND handle)
+{
+	container::iterator i = _windows.find(handle);
+
+	if (i != _windows.end())
+	{
+		Window* window = i->second;
+
+		_windows.erase(i);
+		delete window;
+
+		return true;
+	}
+
+	return false;
+}

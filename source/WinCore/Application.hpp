@@ -17,6 +17,7 @@ public:
 	~Application();
 	ATOM RegisterClassImpl(const WNDCLASSA* wndClass);
 	HWND CreateWindowExAImpl(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
+	BOOL DestroyWindowImpl(HWND hWnd);
 	BOOL GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
 	BOOL PeekMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
 	void PostQuitMessageImpl(int nExitCode);

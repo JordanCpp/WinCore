@@ -208,5 +208,7 @@ int main()
     glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     glDisableClientState(GL_VERTEX_ARRAY);
 
+    DestroyWindow(hwnd);
+
     return 0;
 }

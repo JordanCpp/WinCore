@@ -15,6 +15,7 @@ public:
 	void Remove(HWND handle);
 	Window* Find(HWND hwnd);
 	Window* FindNative(void* native);
+	BOOL Destroy(HWND handle);
 private:
 	typedef std::map<HWND, Window*> container;
 	container _windows;

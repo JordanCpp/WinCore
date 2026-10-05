@@ -53,6 +53,29 @@ HWND Application::CreateWindowExAImpl(DWORD dwExStyle, LPCSTR lpClassName, LPCST
 	return hFakeWnd;
 }
 
+BOOL Application::DestroyWindowImpl(HWND hWnd)
+{
+	if (!hWnd)
+	{
+		return false;
+	}
+
+	Window* window = _windowManager.Find(hWnd);
+	if (!window)
+	{
+		return false;
+	}
+
+	WindowClassA windowClass;
+	if (_classRegistrator.Find(window->GetClassName(), windowClass))
+	{
+		windowClass.lpfnWndProc(hWnd, WM_DESTROY, 0, 0);
+		windowClass.lpfnWndProc(hWnd, WM_NCDESTROY, 0, 0);
+	}
+
+	return _windowManager.Destroy(hWnd);
+}
+
 BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 {
 	if (!lpMsg)

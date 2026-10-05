@@ -179,5 +179,7 @@ int main()
 
     glDeleteTextures(1, &textureID);
 
+    DestroyWindow(hwnd);
+
     return 0;
 }

@@ -143,5 +143,7 @@ int main()
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
 
+    DestroyWindow(hwnd);
+
     return 0;
 }

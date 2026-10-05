@@ -18,6 +18,11 @@ HWND CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, D
 	return result;
 }
 
+BOOL DestroyWindow(HWND hWnd)
+{
+	return MainApplication().DestroyWindowImpl(hWnd);
+}
+
 BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 {
 	return MainApplication().GetMessageAImpl(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
