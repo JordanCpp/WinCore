@@ -200,6 +200,8 @@ int main()
         angle += 0.2f;
 
         SwapBuffers(hDC);
+
+        Sleep(16);
     }
 
     glClientActiveTexture(GL_TEXTURE1);

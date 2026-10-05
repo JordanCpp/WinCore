@@ -62,3 +62,8 @@ HBRUSH GetSysColorBrush(int nIndex)
 {
 	return 0;
 }
+
+BOOL GetClientRect(HWND hWnd, LPRECT lpRect)
+{
+	return MainApplication().GetClientRectAImpl(hWnd, lpRect);
+}

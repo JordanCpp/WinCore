@@ -192,3 +192,23 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 
 	return true;
 }
+
+BOOL Window::GetClientRectImpl(LPRECT lpRect)
+{
+	if (!lpRect || !_window)
+	{
+		return false;
+	}
+
+	int w = 0;
+	int h = 0;
+
+	SDL_GetWindowSize(_window, &w, &h);
+
+	lpRect->left   = 0;
+	lpRect->top    = 0;
+	lpRect->right  = static_cast<LONG>(w);
+	lpRect->bottom = static_cast<LONG>(h);
+
+	return true;
+}

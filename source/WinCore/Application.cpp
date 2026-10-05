@@ -342,6 +342,22 @@ int Application::ReleaseDCImpl(HWND hWnd, HDC hDC)
 	return 1;
 }
 
+BOOL Application::GetClientRectAImpl(HWND hWnd, LPRECT lpRect)
+{
+	if (!hWnd || !lpRect)
+	{
+		return false;
+	}
+
+	Window* window = _windowManager.Find(hWnd);
+	if (!window)
+	{
+		return false;
+	}
+
+	return window->GetClientRectImpl(lpRect);
+}
+
 Application& MainApplication()
 {
 	return _application;

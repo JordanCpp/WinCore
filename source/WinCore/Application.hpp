@@ -9,6 +9,7 @@
 #include <WinCore/Initializer.hpp>
 #include <WinCore/EventHandler.hpp>
 #include <WinCore/SharedCreator.hpp>
+#include <WinCore/Ticks.hpp>
 
 class Application
 {
@@ -36,13 +37,15 @@ public:
 	int SetDIBitsToDeviceImpl(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, int xSrc, int ySrc, UINT uStartScan, UINT cScanLines, const void* lpvBits, const BITMAPINFO* lpbmi, UINT colorUse);
 	int StretchDIBitsImpl(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop);
 	int ReleaseDCImpl(HWND hWnd, HDC hDC);
-private:
+	BOOL GetClientRectAImpl(HWND hWnd, LPRECT lpRect);
+//private:
 	Initializer      _initializer;
 	EventHandler     _eventHandler;
 	ClassRegistrator _classRegistrator;
 	WindowCreator    _windowCreator;
 	WindowManager    _windowManager;
 	SharedCreator    _sharedCreator;
+	Ticks            _ticks;
 };
 
 Application& MainApplication();

@@ -217,6 +217,8 @@ int main()
         light_angle += 0.02f;
 
         SwapBuffers(hDC);
+
+        Sleep(16);
     }
 
     glDisableClientState(GL_VERTEX_ARRAY);

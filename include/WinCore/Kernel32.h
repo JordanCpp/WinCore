@@ -18,6 +18,10 @@ WINCORE_API BOOL FreeLibrary(HMODULE hLibModule);
 
 WINCORE_API FARPROC GetProcAddress(HMODULE hModule, LPCSTR  lpProcName);
 
+WINCORE_API DWORD GetTickCount();
+
+WINCORE_API void Sleep(DWORD dwMilliseconds);
+
 #ifdef __cplusplus
 }
 #endif

@@ -18,6 +18,7 @@ public:
 	BOOL MakeCurrent();
 	BOOL SwapBuffers();
 	BOOL BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight);
+	BOOL GetClientRectImpl(LPRECT lpRect);
 private:
 	SDL_Window*    _window;
 	SDL_Renderer*  _renderer;

@@ -175,6 +175,8 @@ int main()
         angle += 0.5f;
 
         SwapBuffers(hDC);
+
+        Sleep(16);
     }
 
     glDeleteTextures(1, &textureID);

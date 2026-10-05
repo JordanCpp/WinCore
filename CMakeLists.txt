@@ -97,6 +97,7 @@ if (BACKEND_SDL3)
         "source/WinCore/Backends/SDL3/WinCore/Window.cpp"
         "source/WinCore/Backends/SDL3/WinCore/Shared.cpp"
         "source/WinCore/Backends/SDL3/WinCore/OpenGLFunc.cpp"
+        "source/WinCore/Backends/SDL3/WinCore/Ticks.cpp"
     )
 endif()
 

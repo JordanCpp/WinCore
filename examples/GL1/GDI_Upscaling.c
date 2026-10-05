@@ -150,6 +150,8 @@ int main(void)
             DIB_RGB_COLORS,
             SRCCOPY
         );
+
+        Sleep(16);
     }
 
     free(pixelBuffer);

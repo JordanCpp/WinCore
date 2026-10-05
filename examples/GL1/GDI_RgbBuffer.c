@@ -135,6 +135,8 @@ int main(void)
             &bmi,
             DIB_RGB_COLORS
         );
+
+        Sleep(16);
     }
 
     free(pixelBuffer);

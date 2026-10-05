@@ -16,3 +16,13 @@ FARPROC GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
 	return MainApplication().GetProcAddressImpl(hModule, lpProcName);
 }
+
+DWORD GetTickCount()
+{
+	return MainApplication()._ticks.GetTickCount();
+}
+
+void Sleep(DWORD dwMilliseconds)
+{
+	MainApplication()._ticks.Sleep(dwMilliseconds);
+}

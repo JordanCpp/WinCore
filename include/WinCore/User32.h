@@ -65,6 +65,14 @@ typedef struct WNDCLASSA
     LPCSTR      lpszClassName;
 } WNDCLASSA;
 
+typedef struct tagRECT 
+{
+    LONG left;
+    LONG top;
+    LONG right;
+    LONG bottom;
+} RECT, * PRECT, * LPRECT;
+
 #ifdef UNICODE
 #else
     typedef WNDCLASSA WNDCLASS;
@@ -91,6 +99,8 @@ WINCORE_API LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lP
 WINCORE_API LRESULT DispatchMessageA(const MSG* lpMsg);
 
 WINCORE_API BOOL TranslateMessage(const MSG* lpMsg);
+
+WINCORE_API BOOL GetClientRect(HWND hWnd, LPRECT lpRect);
 
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 
