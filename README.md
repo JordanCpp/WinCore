@@ -52,6 +52,8 @@ This tailored subset covers the execution matrix for the vast majority of histor
 WINCORE_API HMODULE LoadLibraryA(LPCSTR lpLibFileName);
 WINCORE_API BOOL FreeLibrary(HMODULE hLibModule);
 WINCORE_API FARPROC GetProcAddress(HMODULE hModule, LPCSTR  lpProcName);
+WINCORE_API DWORD GetTickCount(void);
+WINCORE_API void Sleep(DWORD dwMilliseconds);
 ```
 
 #### 🖼️ User32.dll
@@ -69,6 +71,7 @@ WINCORE_API LRESULT DispatchMessageA(const MSG* lpMsg);
 WINCORE_API BOOL TranslateMessage(const MSG* lpMsg);
 WINCORE_API HDC GetDC(HWND hWnd);
 WINCORE_API int ReleaseDC(HWND hWnd, HDC hDC);
+WINCORE_API BOOL GetClientRect(HWND hWnd, LPRECT lpRect);
 ```
 
 #### 🎨 Gdi32.dll
