@@ -14,11 +14,13 @@ if (BACKEND_SDL2)
         if(CMAKE_SIZEOF_VOID_P EQUAL 8)
             link_directories("dependencies/SDL2-2.30.3/lib/x64")
             file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2-2.30.3/lib/x64/SDL2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2-2.30.3/lib/x64/SDL2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples)
+            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2-2.30.3/lib/x64/SDL2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples/GDI)
+            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2-2.30.3/lib/x64/SDL2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples/GL1)
         elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
             link_directories("dependencies/SDL2-2.30.3/lib/x86")
             file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2-2.30.3/lib/x86/SDL2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2-2.30.3/lib/x86/SDL2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples)
+            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2-2.30.3/lib/x86/SDL2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples/GDI)
+            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2-2.30.3/lib/x86/SDL2.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples/GL1)
         endif()
     else()
         find_package(SDL2 REQUIRED)
@@ -37,11 +39,13 @@ if (BACKEND_SDL3)
         if(CMAKE_SIZEOF_VOID_P EQUAL 8)
             link_directories("dependencies/SDL3-3.4.2/lib/x64")
             file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL3-3.4.2/lib/x64/SDL3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL3-3.4.2/lib/x64/SDL3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples)
+            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL3-3.4.2/lib/x64/SDL3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples/GDI)
+            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL3-3.4.2/lib/x64/SDL3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples/GL1)
         elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
             link_directories("dependencies/SDL3-3.4.2/lib/x86")
             file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL3-3.4.2/lib/x86/SDL3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/)
-            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL3-3.4.2/lib/x86/SDL3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples)
+            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL3-3.4.2/lib/x86/SDL3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples/GDI)
+            file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL3-3.4.2/lib/x86/SDL3.dll DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/examples/GL1)
         endif()
     else()
         find_package(SDL3 REQUIRED)
@@ -136,7 +140,8 @@ add_custom_command(
     TARGET WinCore POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:WinCore>
-    "${CMAKE_CURRENT_BINARY_DIR}/examples/"
+    "${CMAKE_CURRENT_BINARY_DIR}/examples/GDI"
+    "${CMAKE_CURRENT_BINARY_DIR}/examples/GL1"
     COMMENT "Copying WinCore library to examples directory..."
 )
 
