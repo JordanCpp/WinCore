@@ -3,6 +3,7 @@
 #ifndef WinCore_Gdi32_h
 #define WinCore_Gdi32_h
 
+#include <WinCore/Config.h>
 #include <WinCore/Types.h>
 
 #ifdef __cplusplus
@@ -61,13 +62,12 @@ extern "C" {
         DWORD dwDamageMask;
     } PIXELFORMATDESCRIPTOR, *PPIXELFORMATDESCRIPTOR, *LPPIXELFORMATDESCRIPTOR;
 
-HDC GetDC(HWND hWnd);
-int ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd);
-BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd);
-HGLRC wglCreateContext(HDC hdc);
-BOOL wglMakeCurrent(HDC hdc, HGLRC hglrc);
-BOOL SwapBuffers(HDC hdc);
-
+WINCORE_API HDC GetDC(HWND hWnd);
+WINCORE_API int ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd);
+WINCORE_API BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd);
+WINCORE_API HGLRC wglCreateContext(HDC hdc);
+WINCORE_API BOOL wglMakeCurrent(HDC hdc, HGLRC hglrc);
+WINCORE_API BOOL SwapBuffers(HDC hdc);
 
 #ifdef __cplusplus
 }

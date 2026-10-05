@@ -7,15 +7,16 @@
 extern "C" {
 #endif
 
+#include <WinCore/Config.h>
 #include <WinCore/Types.h>
 
 typedef int (FAR WINAPI* FARPROC)();
 
-HMODULE LoadLibraryA(LPCSTR lpLibFileName);
+WINCORE_API HMODULE LoadLibraryA(LPCSTR lpLibFileName);
 
-BOOL FreeLibrary(HMODULE hLibModule);
+WINCORE_API BOOL FreeLibrary(HMODULE hLibModule);
 
-FARPROC GetProcAddress(HMODULE hModule, LPCSTR  lpProcName);
+WINCORE_API FARPROC GetProcAddress(HMODULE hModule, LPCSTR  lpProcName);
 
 #ifdef __cplusplus
 }

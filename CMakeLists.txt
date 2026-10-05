@@ -1,9 +1,10 @@
-
 cmake_minimum_required(VERSION 3.15)
 
-project(WinCore)
+project(WinCore LANGUAGES CXX C)
 
-set(BACKEND_SDL3 ON)
+option(BACKEND_SDL2 "Build with SDL2 backend" OFF)
+option(BACKEND_SDL3 "Build with SDL3 backend" ON)
+option(BACKEND_NULL "Build with Null backend" OFF)
 
 if (BACKEND_SDL2)
     if (WIN32)
@@ -25,6 +26,7 @@ if (BACKEND_SDL2)
 
     include_directories(${SDL2_INCLUDE_DIRS})
     include_directories("source/WinCore/Backends/SDL2")
+    add_compile_definitions(WINCORE_BACKEND_SDL2)
 endif()
 
 if (BACKEND_SDL3)
@@ -47,27 +49,31 @@ if (BACKEND_SDL3)
 
     include_directories(${SDL3_INCLUDE_DIRS})
     include_directories("source/WinCore/Backends/SDL3")
+    add_compile_definitions(WINCORE_BACKEND_SDL3)
 endif()
 
 if (BACKEND_NULL)
     include_directories("source/WinCore/Backends/Null")
+    add_compile_definitions(WINCORE_BACKEND_NULL)
 endif()
 
 include_directories("include")
 include_directories("source")
+include_directories("dependencies")
 
 file(GLOB WINCORE_SOURCES 
-"source/WinCore/Application.cpp"
-"source/WinCore/BaseWindow.cpp"
-"source/WinCore/ClassRegistrator.cpp"
-"source/WinCore/WindowManager.cpp"
-"source/WinCore/WindowClassA.cpp"
-"source/WinCore/WindowCreator.cpp"
-"source/WinCore/SharedCreator.cpp"
-"source/WinCore/User32.cpp"
-"source/WinCore/Gdi32.cpp"
-"source/WinCore/Kernel32.cpp"
-"source/WinCore/OpenGL32.cpp")
+    "source/WinCore/Application.cpp"
+    "source/WinCore/BaseWindow.cpp"
+    "source/WinCore/ClassRegistrator.cpp"
+    "source/WinCore/WindowManager.cpp"
+    "source/WinCore/WindowClassA.cpp"
+    "source/WinCore/WindowCreator.cpp"
+    "source/WinCore/SharedCreator.cpp"
+    "source/WinCore/User32.cpp"
+    "source/WinCore/Gdi32.cpp"
+    "source/WinCore/Kernel32.cpp"
+    "source/WinCore/OpenGL32.cpp"
+)
 
 if (BACKEND_SDL2)
     file(GLOB BACKEND_SOURCES 
@@ -75,7 +81,8 @@ if (BACKEND_SDL2)
         "source/WinCore/Backends/SDL2/WinCore/EventTranslator.cpp"
         "source/WinCore/Backends/SDL2/WinCore/Initializer.cpp"
         "source/WinCore/Backends/SDL2/WinCore/Shared.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/Window.cpp")
+        "source/WinCore/Backends/SDL2/WinCore/Window.cpp"
+    )
 endif()
 
 if (BACKEND_SDL3)
@@ -84,30 +91,61 @@ if (BACKEND_SDL3)
         "source/WinCore/Backends/SDL3/WinCore/EventTranslator.cpp"
         "source/WinCore/Backends/SDL3/WinCore/Initializer.cpp"
         "source/WinCore/Backends/SDL3/WinCore/Window.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/Shared.cpp")
+        "source/WinCore/Backends/SDL3/WinCore/Shared.cpp"
+    )
 endif()
 
 if (BACKEND_NULL)
     file(GLOB BACKEND_SOURCES 
         "source/WinCore/Backends/Null/WinCore/EventHandler.cpp"
         "source/WinCore/Backends/Null/WinCore/Initializer.cpp"
-        "source/WinCore/Backends/Null/WinCore/Window.cpp")
+        "source/WinCore/Backends/Null/WinCore/Window.cpp"
+    )
 endif()
 
-add_library(WinCore ${WINCORE_SOURCES} ${BACKEND_SOURCES})
+add_library(WinCore SHARED ${WINCORE_SOURCES} ${BACKEND_SOURCES})
+
+target_compile_definitions(WinCore PRIVATE WINCORE_BUILD_DLL)
+
+set_target_properties(WinCore PROPERTIES
+    CXX_VISIBILITY_PRESET hidden
+    VISIBILITY_INLINES_HIDDEN ON
+)
 
 if (BACKEND_SDL2)
-    target_link_libraries(WinCore ${SDL2_LIBRARIES})
+    target_link_libraries(WinCore PRIVATE ${SDL2_LIBRARIES})
 endif()
 
 if (BACKEND_SDL3)
-    target_link_libraries(WinCore ${SDL3_LIBRARIES})
+    target_link_libraries(WinCore PRIVATE ${SDL3_LIBRARIES})
 endif()
 
-include_directories("dependencies")
+if (WIN32)
+    target_link_libraries(WinCore PRIVATE opengl32)
+else()
+    find_package(OpenGL REQUIRED)
+    target_link_libraries(WinCore PRIVATE OpenGL::GL)
+endif()
+
+if (WIN32 AND MINGW)
+    target_link_options(WinCore PRIVATE "-Wl,--allow-multiple-definition")
+endif()
+
+add_custom_command(
+    TARGET WinCore POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:WinCore>
+    "${CMAKE_CURRENT_BINARY_DIR}/examples/"
+    COMMENT "Copying WinCore library to examples directory..."
+)
 
 add_executable(test "test.c")
-target_link_options(test PRIVATE "-Wl,--allow-multiple-definition")
-target_link_libraries(test WinCore opengl32)
+
+target_link_libraries(test PRIVATE WinCore)
+
+if (WIN32)
+    target_link_options(test PRIVATE "-Wl,--allow-multiple-definition")
+    target_link_libraries(test PRIVATE opengl32)
+endif()
 
 add_subdirectory(examples)

@@ -7,9 +7,10 @@
 extern "C" {
 #endif
 
+#include <WinCore/Config.h>
 #include <WinCore/Types.h>
 
-PROC wglGetProcAddress(LPCSTR unnamedParam1);
+WINCORE_API PROC wglGetProcAddress(LPCSTR unnamedParam1);
 
 #ifdef __cplusplus
 }

@@ -7,6 +7,7 @@
 extern "C" {
 #endif
 
+#include <WinCore/Config.h>
 #include <WinCore/Types.h>
 
 typedef struct tagCREATESTRUCTA 
@@ -68,25 +69,25 @@ typedef struct WNDCLASSA
     typedef WNDCLASSA WNDCLASS;
 #endif
 
-HMODULE GetModuleHandleA(LPCSTR lpModuleName);
+WINCORE_API HMODULE GetModuleHandleA(LPCSTR lpModuleName);
 
-HBRUSH GetSysColorBrush(int nIndex);
+WINCORE_API HBRUSH GetSysColorBrush(int nIndex);
 
-ATOM RegisterClassA(const WNDCLASSA* lpWndClass);
+WINCORE_API ATOM RegisterClassA(const WNDCLASSA* lpWndClass);
 
-HWND CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
+WINCORE_API HWND CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 
-BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
+WINCORE_API BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
 
-BOOL PeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
+WINCORE_API BOOL PeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
 
-void PostQuitMessage(int nExitCode);
+WINCORE_API void PostQuitMessage(int nExitCode);
 
-LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+WINCORE_API LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
 
-LRESULT DispatchMessageA(const MSG* lpMsg);
+WINCORE_API LRESULT DispatchMessageA(const MSG* lpMsg);
 
-BOOL TranslateMessage(const MSG* lpMsg);
+WINCORE_API BOOL TranslateMessage(const MSG* lpMsg);
 
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 
