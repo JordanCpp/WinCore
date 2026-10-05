@@ -7,7 +7,6 @@ void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
     winMsg.hwnd = NULL;
     winMsg.wParam = 0;
     winMsg.lParam = 0;
-    // В SDL3 timestamp измеряется в наносекундах. Переводим в миллисекунды для WinAPI.
     winMsg.time = static_cast<DWORD>(sdlEvent.common.timestamp / 1000000);
     winMsg.pt.x = 0;
     winMsg.pt.y = 0;
@@ -25,12 +24,12 @@ void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
 
     case SDL_EVENT_KEY_DOWN:
         winMsg.message = WM_KEYDOWN;
-        winMsg.wParam = TranslateKey(sdlEvent.key.key); // Прямой доступ без .keysym.sym
+        winMsg.wParam = TranslateKey(sdlEvent.key.key);
         break;
 
     case SDL_EVENT_KEY_UP:
         winMsg.message = WM_KEYUP;
-        winMsg.wParam = TranslateKey(sdlEvent.key.key); // Прямой доступ без .keysym.sym
+        winMsg.wParam = TranslateKey(sdlEvent.key.key);
         break;
 
     case SDL_EVENT_MOUSE_MOTION:
@@ -47,7 +46,6 @@ void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
 
 WPARAM EventTranslator::TranslateKey(SDL_Keycode sdlKey)
 {
-    // В SDL3 коды букв SDLK_A - SDLK_Z теперь в верхнем регистре
     if (sdlKey >= SDLK_A && sdlKey <= SDLK_Z)
     {
         return 'A' + (sdlKey - SDLK_A);
@@ -60,14 +58,15 @@ WPARAM EventTranslator::TranslateKey(SDL_Keycode sdlKey)
 
     switch (sdlKey)
     {
-        // Control & System Keys
+
+    // Control & System Keys
     case SDLK_ESCAPE:    return VK_ESCAPE;
     case SDLK_RETURN:    return VK_RETURN;
     case SDLK_BACKSPACE: return VK_BACK;
     case SDLK_TAB:       return VK_TAB;
     case SDLK_SPACE:     return VK_SPACE;
 
-        // Modifiers
+    // Modifiers
     case SDLK_LSHIFT:    return VK_LSHIFT;
     case SDLK_RSHIFT:    return VK_RSHIFT;
     case SDLK_LCTRL:     return VK_LCONTROL;
@@ -75,7 +74,7 @@ WPARAM EventTranslator::TranslateKey(SDL_Keycode sdlKey)
     case SDLK_LALT:      return VK_LMENU;
     case SDLK_RALT:      return VK_RMENU;
 
-        // Navigation
+    // Navigation
     case SDLK_UP:        return VK_UP;
     case SDLK_DOWN:      return VK_DOWN;
     case SDLK_LEFT:      return VK_LEFT;
@@ -87,7 +86,7 @@ WPARAM EventTranslator::TranslateKey(SDL_Keycode sdlKey)
     case SDLK_PAGEUP:    return VK_PRIOR;
     case SDLK_PAGEDOWN:  return VK_NEXT;
 
-        // Function keys
+    // Function keys
     case SDLK_F1:        return VK_F1;
     case SDLK_F2:        return VK_F2;
     case SDLK_F3:        return VK_F3;
@@ -101,7 +100,7 @@ WPARAM EventTranslator::TranslateKey(SDL_Keycode sdlKey)
     case SDLK_F11:       return VK_F11;
     case SDLK_F12:       return VK_F12;
 
-        // Numpad
+    // Numpad
     case SDLK_KP_0:        return VK_NUMPAD0;
     case SDLK_KP_1:        return VK_NUMPAD1;
     case SDLK_KP_2:        return VK_NUMPAD2;

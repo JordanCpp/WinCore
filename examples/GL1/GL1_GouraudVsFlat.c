@@ -82,6 +82,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
     switch (msg)
     {
+    case WM_SIZE:
+    {
+        int width = (int)LOWORD(lParam);
+        int height = (int)HIWORD(lParam);
+
+        if (height == 0) height = 1;
+
+        glViewport(0, 0, width, height);
+    }
+    break;
     case WM_KEYDOWN:
         if (wParam == 'X' || wParam == 'x')
         {
@@ -134,8 +144,8 @@ int main()
     wc.lpfnWndProc = WndProc;
     RegisterClass(&wc);
 
-    hwnd = CreateWindow(wc.lpszClassName, "OpenGL 1.2 - Gouraud vs Flat (Press SPACE)",
-        0, CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, wc.hInstance, NULL);
+    hwnd = CreateWindow(wc.lpszClassName, "OpenGL 1.2 - Gouraud vs Flat (Press SPACE)", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, wc.hInstance, NULL);
+    ShowWindow(hwnd, SW_SHOW);
 
     hDC = GetDC(hwnd);
 

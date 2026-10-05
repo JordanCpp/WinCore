@@ -2,6 +2,43 @@
 
 #include <WinCore/Window.hpp>
 
+static void StylesToProperties(SDL_PropertiesID props, DWORD dwStyle, DWORD dwExStyle)
+{
+	if (dwStyle & WS_POPUP)
+	{
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_BORDERLESS_BOOLEAN, true);
+	}
+
+	if (dwStyle & WS_THICKFRAME)
+	{
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_RESIZABLE_BOOLEAN, true);
+	}
+
+	if (!(dwStyle & WS_VISIBLE))
+	{
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_HIDDEN_BOOLEAN, true);
+	}
+
+	if (dwStyle & WS_MINIMIZE)
+	{
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_MINIMIZED_BOOLEAN, true);
+	}
+	else if (dwStyle & WS_MAXIMIZE)
+	{
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_MAXIMIZED_BOOLEAN, true);
+	}
+
+	if (dwExStyle & WS_EX_TOPMOST)
+	{
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_ALWAYS_ON_TOP_BOOLEAN, true);
+	}
+
+	if (dwExStyle & WS_EX_TOOLWINDOW)
+	{
+		SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_UTILITY_BOOLEAN, true);
+	}
+}
+
 Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) :
 	_window(NULL),
 	_renderer(NULL),
@@ -23,7 +60,7 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	int x = (_baseWindow.X == CW_USEDEFAULT) ? SDL_WINDOWPOS_UNDEFINED : _baseWindow.X;
 	int y = (_baseWindow.Y == CW_USEDEFAULT) ? SDL_WINDOWPOS_UNDEFINED : _baseWindow.Y;
 
-	int w = (_baseWindow.nWidth  == CW_USEDEFAULT) ? 800 : _baseWindow.nWidth;
+	int w = (_baseWindow.nWidth == CW_USEDEFAULT) ? 800 : _baseWindow.nWidth;
 	int h = (_baseWindow.nHeight == CW_USEDEFAULT) ? 600 : _baseWindow.nHeight;
 
 	SDL_PropertiesID props = SDL_CreateProperties();
@@ -33,11 +70,12 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
 
+	StylesToProperties(props, _baseWindow.dwStyle, _baseWindow.dwExStyle);
+
 	_window = SDL_CreateWindowWithProperties(props);
 
 	SDL_DestroyProperties(props);
 }
-
 
 Window::~Window()
 {
@@ -88,6 +126,8 @@ void Window::CreateContext()
 	SDL_GetWindowPosition(_window, &x, &y);
 	SDL_GetWindowSize(_window, &w, &h);
 
+	bool isCurrentlyVisible = (_window && !(SDL_GetWindowFlags(_window) & SDL_WINDOW_HIDDEN));
+
 	if (_window)
 	{
 		SDL_DestroyWindow(_window);
@@ -100,6 +140,14 @@ void Window::CreateContext()
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
 	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
+
+	DWORD activeStyle = _baseWindow.dwStyle;
+	if (isCurrentlyVisible)
+	{
+		activeStyle |= WS_VISIBLE;
+	}
+
+	StylesToProperties(props, activeStyle, _baseWindow.dwExStyle);
 
 	_window = SDL_CreateWindowWithProperties(props);
 	SDL_DestroyProperties(props);
@@ -215,19 +263,18 @@ BOOL Window::GetClientRectImpl(LPRECT lpRect)
 
 BOOL Window::ShowWindow(int nCmdShow)
 {
-	if (!_window)
-	{
-		return false;
-	}
+	if (!_window) return false;
 
-	if (nCmdShow == SW_HIDE)
+	if (nCmdShow == SW_HIDE) 
 	{
 		SDL_HideWindow(_window);
+		_baseWindow.dwStyle &= ~WS_VISIBLE;
 		return false;
 	}
 	else
 	{
 		SDL_ShowWindow(_window);
+		_baseWindow.dwStyle |= WS_VISIBLE;
 		return true;
 	}
 }

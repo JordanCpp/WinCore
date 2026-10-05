@@ -39,10 +39,12 @@ typedef unsigned short  ATOM;
 
 #if defined(_WIN64) || defined(_M_X64) || defined(__amd64__) || defined(__x86_64__) || defined(__LP64__)
     typedef unsigned long long UINT_PTR;
+    typedef unsigned long long DWORD_PTR;
     typedef long long          LONG_PTR;
 #else
     typedef unsigned int       UINT_PTR;
     typedef long               LONG_PTR;
+    typedef unsigned long      DWORD_PTR;
 #endif
 
 typedef UINT_PTR        WPARAM;
@@ -53,5 +55,9 @@ typedef char  CHAR;
 typedef const CHAR* LPCSTR, * PCSTR;
 
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
+
+#define LOWORD(l) ((WORD)(((DWORD_PTR)(l)) & 0xffff))
+
+#define HIWORD(l) ((WORD)((((DWORD_PTR)(l)) >> 16) & 0xffff))
 
 #endif
