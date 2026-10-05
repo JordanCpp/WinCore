@@ -35,6 +35,7 @@ public:
 	FARPROC GetProcAddressImpl(HMODULE hModule, LPCSTR  lpProcName);
 	int SetDIBitsToDeviceImpl(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, int xSrc, int ySrc, UINT uStartScan, UINT cScanLines, const void* lpvBits, const BITMAPINFO* lpbmi, UINT colorUse);
 	int StretchDIBitsImpl(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop);
+	int ReleaseDCImpl(HWND hWnd, HDC hDC);
 private:
 	Initializer      _initializer;
 	EventHandler     _eventHandler;

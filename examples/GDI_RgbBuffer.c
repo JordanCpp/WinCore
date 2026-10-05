@@ -138,6 +138,7 @@ int main(void)
     }
 
     free(pixelBuffer);
+    ReleaseDC(hwnd, hDC);
     DestroyWindow(hwnd);
 
     return 0;

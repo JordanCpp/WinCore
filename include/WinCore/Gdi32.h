@@ -108,6 +108,7 @@ WINCORE_API BOOL SwapBuffers(HDC hdc);
 
 WINCORE_API int SetDIBitsToDevice(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, int xSrc, int ySrc, UINT uStartScan, UINT cScanLines, const void* lpvBits, const BITMAPINFO* lpbmi, UINT colorUse);
 WINCORE_API int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop);
+WINCORE_API int ReleaseDC(HWND hWnd, HDC hDC);
 
 #ifdef __cplusplus
 }

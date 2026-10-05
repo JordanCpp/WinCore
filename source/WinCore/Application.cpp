@@ -326,6 +326,22 @@ int Application::StretchDIBitsImpl(HDC hdc, int xDest, int yDest, int wDest, int
 	return success ? hSrc : 0;
 }
 
+int Application::ReleaseDCImpl(HWND hWnd, HDC hDC)
+{
+	if (!hDC)
+	{
+		return 0;
+	}
+
+	Window* window = _windowManager.Find(hWnd ? hWnd : (HWND)hDC);
+	if (!window)
+	{
+		return 0;
+	}
+
+	return 1;
+}
+
 Application& MainApplication()
 {
 	return _application;

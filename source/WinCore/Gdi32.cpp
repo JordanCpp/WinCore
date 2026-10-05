@@ -41,3 +41,8 @@ int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc,
 {
 	return MainApplication().StretchDIBitsImpl(hdc, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, lpBits, lpbmi, iUsage, rop);
 }
+
+int ReleaseDC(HWND hWnd, HDC hDC)
+{
+	return MainApplication().ReleaseDCImpl(hWnd, hDC);
+}
