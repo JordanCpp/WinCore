@@ -45,6 +45,50 @@ This tailored subset covers the execution matrix for the vast majority of histor
 
 ---
 
+### Implemented WinAPI Functions (C89)
+
+#### ⚙️ Kernel32.dll
+```c
+WINCORE_API HMODULE LoadLibraryA(LPCSTR lpLibFileName);
+WINCORE_API BOOL FreeLibrary(HMODULE hLibModule);
+WINCORE_API FARPROC GetProcAddress(HMODULE hModule, LPCSTR  lpProcName);
+```
+
+#### 🖼️ User32.dll
+```c
+WINCORE_API HMODULE GetModuleHandleA(LPCSTR lpModuleName);
+WINCORE_API HBRUSH GetSysColorBrush(int nIndex);
+WINCORE_API ATOM RegisterClassA(const WNDCLASSA* lpWndClass);
+WINCORE_API HWND CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
+WINCORE_API BOOL DestroyWindow(HWND hWnd);
+WINCORE_API BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax);
+WINCORE_API BOOL PeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg);
+WINCORE_API void PostQuitMessage(int nExitCode);
+WINCORE_API LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
+WINCORE_API LRESULT DispatchMessageA(const MSG* lpMsg);
+WINCORE_API BOOL TranslateMessage(const MSG* lpMsg);
+WINCORE_API HDC GetDC(HWND hWnd);
+WINCORE_API int ReleaseDC(HWND hWnd, HDC hDC);
+```
+
+#### 🎨 Gdi32.dll
+```c
+WINCORE_API int ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd);
+WINCORE_API BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd);
+WINCORE_API BOOL SwapBuffers(HDC hdc);
+WINCORE_API int SetDIBitsToDevice(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, int xSrc, int ySrc, UINT uStartScan, UINT cScanLines, const void* lpvBits, const BITMAPINFO* lpbmi, UINT colorUse);
+WINCORE_API int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop);
+```
+
+#### 🕹️ Opengl32.dll
+```c
+WINCORE_API HGLRC wglCreateContext(HDC hdc);
+WINCORE_API BOOL wglMakeCurrent(HDC hdc, HGLRC hglrc);
+WINCORE_API PROC wglGetProcAddress(LPCSTR unnamedParam1);
+```
+
+---
+
 ## Core Execution Model
 
 Instead of including native Microsoft headers, you link against WinCore. Legacy procedural entry-points compile and process identically across platforms:
