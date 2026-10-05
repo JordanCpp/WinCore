@@ -61,7 +61,7 @@ int main()
     wc.lpfnWndProc = WndProc;
     RegisterClass(&wc);
 
-    HWND hwnd = CreateWindow(wc.lpszClassName, "Example 2 - Vertex Arrays",
+    HWND hwnd = CreateWindow(wc.lpszClassName, "OpenGL 1.2 - Vertex Arrays",
         0,
         CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, wc.hInstance, NULL);
 

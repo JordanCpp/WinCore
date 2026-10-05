@@ -97,7 +97,7 @@ int main()
     wc.lpfnWndProc = WndProc;
     RegisterClass(&wc);
 
-    HWND hwnd = CreateWindow(wc.lpszClassName, "Example 1 - Textured 3D Cube",
+    HWND hwnd = CreateWindow(wc.lpszClassName, "OpenGL 1.2 - Textured 3D Cube",
         0,
         CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, wc.hInstance, NULL);
 
