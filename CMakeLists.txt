@@ -140,13 +140,4 @@ add_custom_command(
     COMMENT "Copying WinCore library to examples directory..."
 )
 
-add_executable(test "test.c")
-
-target_link_libraries(test PRIVATE WinCore)
-
-if (WIN32)
-    target_link_options(test PRIVATE "-Wl,--allow-multiple-definition")
-    target_link_libraries(test PRIVATE opengl32)
-endif()
-
 add_subdirectory(examples)

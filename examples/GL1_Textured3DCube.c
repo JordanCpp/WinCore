@@ -1,4 +1,9 @@
-/* Copyright(C) 2026 Evgeny Zoshchuk(JordanCpp).Licensed under LGPL - 3.0 - or -later. */
+/*
+ * -----------------------------------------------------------------------------
+ * This example is in the public domain (CC0 1.0 Universal).
+ * You can copy, modify, use, and distribute it for any purpose.
+ * -----------------------------------------------------------------------------
+ */
 
 #define OPENGL_IMPLEMENTATION
 #include "OpenGL.h"

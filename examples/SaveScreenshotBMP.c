@@ -1,3 +1,9 @@
+/*
+ * -----------------------------------------------------------------------------
+ * This example is in the public domain (CC0 1.0 Universal).
+ * You can copy, modify, use, and distribute it for any purpose.
+ * -----------------------------------------------------------------------------
+ */
 
 #include "OpenGL.h"
 #include "SaveScreenshotBMP.h"
