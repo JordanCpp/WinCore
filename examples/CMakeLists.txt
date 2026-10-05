@@ -23,6 +23,8 @@ function(add_wincore_example EXAMPLE_NAME)
 endfunction()
 
 set(WINCORE_EXAMPLES
+    GDI_RgbBuffer
+    GDI_Upscaling
     GL1_DynamicSpotlight
     GL1_GouraudVsFlat
     GL1_MultitextureBlend

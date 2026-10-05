@@ -280,6 +280,52 @@ FARPROC Application::GetProcAddressImpl(HMODULE hModule, LPCSTR lpProcName)
 	return (FARPROC)shared->GetFunction(lpProcName);
 }
 
+int Application::SetDIBitsToDeviceImpl(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, int xSrc, int ySrc, UINT uStartScan, UINT cScanLines, const void* lpvBits, const BITMAPINFO* lpbmi, UINT colorUse)
+{
+	if (!hdc || !lpvBits || !lpbmi)
+	{
+		return 0;
+	}
+
+	HWND hWnd = (HWND)hdc;
+	Window* window = _windowManager.Find(hWnd);
+	if (!window)
+	{
+		return 0;
+	}
+
+	int srcWidth  = lpbmi->bmiHeader.biWidth;
+	int biHeight  = lpbmi->bmiHeader.biHeight;
+	int srcHeight = (biHeight < 0) ? -biHeight : biHeight;
+
+	BOOL success = window->BlitDIBits(xDest, yDest, static_cast<int>(wDest), static_cast<int>(hDest), xSrc, ySrc, srcWidth, srcHeight, lpvBits, srcWidth, srcHeight, biHeight);
+
+	return success ? cScanLines : 0;
+}
+
+int Application::StretchDIBitsImpl(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop)
+{
+	if (!hdc || !lpBits || !lpbmi)
+	{
+		return 0;
+	}
+
+	HWND hWnd = (HWND)hdc;
+	Window* window = _windowManager.Find(hWnd);
+	if (!window)
+	{
+		return 0;
+	}
+
+	int srcWidth  = lpbmi->bmiHeader.biWidth;
+	int biHeight  = lpbmi->bmiHeader.biHeight;
+	int srcHeight = std::abs(biHeight);
+
+	BOOL success = window->BlitDIBits(xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, lpBits, srcWidth, srcHeight, biHeight);
+
+	return success ? hSrc : 0;
+}
+
 Application& MainApplication()
 {
 	return _application;

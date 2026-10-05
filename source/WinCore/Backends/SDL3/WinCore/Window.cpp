@@ -4,6 +4,7 @@
 
 Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) :
 	_window(NULL),
+	_renderer(NULL),
 	_glContext(NULL)
 {
 	_baseWindow.dwExStyle = dwExStyle;
@@ -31,7 +32,6 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, y);
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
-	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
 
 	_window = SDL_CreateWindowWithProperties(props);
 
@@ -69,11 +69,51 @@ const std::string& Window::GetClassName() const
 
 void Window::CreateContext()
 {
+	if (_glContext)
+	{
+		return;
+	}
+
+	if (_renderer)
+	{
+		SDL_DestroyRenderer(_renderer);
+		_renderer = NULL;
+	}
+
+	int x = 0;
+	int	y = 0;
+	int	w = 0;
+	int	h = 0;
+
+	SDL_GetWindowPosition(_window, &x, &y);
+	SDL_GetWindowSize(_window, &w, &h);
+
+	if (_window)
+	{
+		SDL_DestroyWindow(_window);
+	}
+
+	SDL_PropertiesID props = SDL_CreateProperties();
+	SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, _baseWindow.lpWindowName.c_str());
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, x);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, y);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
+	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
+	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
+
+	_window = SDL_CreateWindowWithProperties(props);
+	SDL_DestroyProperties(props);
+
 	_glContext = SDL_GL_CreateContext(_window);
 }
 
 BOOL Window::MakeCurrent()
 {
+	if (!_glContext)
+	{
+		CreateContext();
+	}
+
 	if (SDL_GL_MakeCurrent(_window, _glContext) == 0)
 	{
 		return true;
@@ -84,5 +124,71 @@ BOOL Window::MakeCurrent()
 
 BOOL Window::SwapBuffers()
 {
-	return SDL_GL_SwapWindow(_window);
+	if (_glContext)
+	{
+		return SDL_GL_SwapWindow(_window);
+	}
+
+	return false;
+}
+
+BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight)
+{
+	if (_glContext)
+	{
+		return false;
+	}
+
+	if (!_renderer)
+	{
+		_renderer = SDL_CreateRenderer(_window, NULL);
+
+		if (!_renderer)
+		{
+			return false;
+		}
+	}
+
+	SDL_Texture* texture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_XRGB8888, SDL_TEXTUREACCESS_STREAMING, srcWidth, srcHeight);
+	if (!texture) 
+	{
+		return false;
+	}
+
+	int pitch = srcWidth * 4;
+
+	if (!SDL_UpdateTexture(texture, NULL, lpBits, pitch))
+	{
+		SDL_DestroyTexture(texture);
+
+		return false;
+	}
+
+	SDL_FRect srcRect;
+	srcRect.x = static_cast<float>(xSrc);
+	srcRect.y = static_cast<float>(ySrc);
+	srcRect.w = static_cast<float>(wSrc);
+	srcRect.h = static_cast<float>(hSrc);
+
+	SDL_FRect destRect;
+	destRect.x = static_cast<float>(xDest);
+	destRect.y = static_cast<float>(yDest);
+	destRect.w = static_cast<float>(wDest);
+	destRect.h = static_cast<float>(hDest);
+
+	SDL_RenderClear(_renderer);
+
+	if (biHeight > 0)
+	{
+		SDL_RenderTextureRotated(_renderer, texture, &srcRect, &destRect, 0.0, NULL, SDL_FLIP_VERTICAL);
+	}
+	else
+	{
+		SDL_RenderTexture(_renderer, texture, &srcRect, &destRect);
+	}
+
+	SDL_RenderPresent(_renderer);
+	SDL_DestroyTexture(texture);
+
+	return true;
 }

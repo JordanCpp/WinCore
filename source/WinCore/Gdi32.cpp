@@ -31,3 +31,13 @@ BOOL SwapBuffers(HDC hdc)
 {
 	return MainApplication().SwapBuffers(hdc);
 }
+
+int SetDIBitsToDevice(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, int xSrc, int ySrc, UINT uStartScan, UINT cScanLines, const void* lpvBits, const BITMAPINFO* lpbmi, UINT colorUse)
+{
+	return MainApplication().SetDIBitsToDeviceImpl(hdc, xDest, yDest, wDest, hDest, xSrc, ySrc, uStartScan, cScanLines, lpvBits, lpbmi, colorUse);
+}
+
+int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop)
+{
+	return MainApplication().StretchDIBitsImpl(hdc, xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, lpBits, lpbmi, iUsage, rop);
+}
