@@ -358,6 +358,26 @@ BOOL Application::GetClientRectAImpl(HWND hWnd, LPRECT lpRect)
 	return window->GetClientRectImpl(lpRect);
 }
 
+BOOL Application::ShowWindowAImpl(HWND hWnd, int nCmdShow)
+{
+	if (!hWnd) return false;
+
+	Window* window = _windowManager.Find(hWnd);
+	if (!window) return false;
+
+	return window->ShowWindow(nCmdShow);
+}
+
+BOOL Application::UpdateWindowImpl(HWND hWnd)
+{
+	if (!hWnd) return false;
+
+	Window* window = _windowManager.Find(hWnd);
+	if (!window) return false;
+
+	return window->UpdateWindow();
+}
+
 Application& MainApplication()
 {
 	return _application;

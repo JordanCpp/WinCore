@@ -38,6 +38,8 @@ public:
 	int StretchDIBitsImpl(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop);
 	int ReleaseDCImpl(HWND hWnd, HDC hDC);
 	BOOL GetClientRectAImpl(HWND hWnd, LPRECT lpRect);
+	BOOL ShowWindowAImpl(HWND hWnd, int nCmdShow);
+	BOOL UpdateWindowImpl(HWND hWnd);
 //private:
 	Initializer      _initializer;
 	EventHandler     _eventHandler;

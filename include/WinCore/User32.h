@@ -35,6 +35,13 @@ extern "C" {
 
 #define CW_USEDEFAULT ((int)0x80000000)
 
+#define SW_HIDE             0
+#define SW_SHOWNORMAL       1
+#define SW_SHOWMINIMIZED    2
+#define SW_SHOWMAXIMIZED    3
+#define SW_SHOW             5
+#define SW_SHOWDEFAULT      10
+
 typedef struct POINT
 {
     LONG  x;
@@ -101,6 +108,10 @@ WINCORE_API LRESULT DispatchMessageA(const MSG* lpMsg);
 WINCORE_API BOOL TranslateMessage(const MSG* lpMsg);
 
 WINCORE_API BOOL GetClientRect(HWND hWnd, LPRECT lpRect);
+
+WINCORE_API BOOL ShowWindow(HWND hWnd, int nCmdShow);
+
+WINCORE_API BOOL UpdateWindow(HWND hWnd);
 
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 

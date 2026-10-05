@@ -212,3 +212,32 @@ BOOL Window::GetClientRectImpl(LPRECT lpRect)
 
 	return true;
 }
+
+BOOL Window::ShowWindow(int nCmdShow)
+{
+	if (!_window)
+	{
+		return false;
+	}
+
+	if (nCmdShow == SW_HIDE)
+	{
+		SDL_HideWindow(_window);
+		return false;
+	}
+	else
+	{
+		SDL_ShowWindow(_window);
+		return true;
+	}
+}
+
+BOOL Window::UpdateWindow()
+{
+	if (!_window)
+	{
+		return false;
+	}
+
+	return true;
+}

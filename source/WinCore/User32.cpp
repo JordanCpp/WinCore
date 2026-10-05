@@ -67,3 +67,13 @@ BOOL GetClientRect(HWND hWnd, LPRECT lpRect)
 {
 	return MainApplication().GetClientRectAImpl(hWnd, lpRect);
 }
+
+BOOL ShowWindow(HWND hWnd, int nCmdShow)
+{
+	return MainApplication().ShowWindowAImpl(hWnd, nCmdShow);
+}
+
+BOOL UpdateWindow(HWND hWnd)
+{
+	return MainApplication().UpdateWindowImpl(hWnd);
+}
