@@ -1,4 +1,4 @@
-// Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
+/* Copyright(C) 2026 Evgeny Zoshchuk(JordanCpp).Licensed under LGPL - 3.0 - or -later. */
 
 #ifndef WinCore_OpenGL32_h
 #define WinCore_OpenGL32_h

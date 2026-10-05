@@ -4152,7 +4152,12 @@ void OpenGL_Assert(const char* file, int line, const char* expression)
 
 int OpenGL_LoadLibrary()
 {
+
+#if defined(_WIN32) || defined(__CYGWIN__)
 	globalLibraryPtr = LoadLibraryA("OpenGL32.dll");
+#else
+	globalLibraryPtr = LoadLibraryA("libGL.so.1");
+#endif
 
     return (globalLibraryPtr != NULL);
 }
@@ -4161,18 +4166,14 @@ OpenGL_Function_Pointer OpenGL_Load(const char* name)
 {
 	OpenGL_Function_Pointer result = (OpenGL_Function_Pointer)wglGetProcAddress(name);
 
-	if (result == 0
-		|| (result == (OpenGL_Function_Pointer)0x1)
-		|| (result == (OpenGL_Function_Pointer)0x2)
-		|| (result == (OpenGL_Function_Pointer)0x3)
-		|| (result == (OpenGL_Function_Pointer)-1))
+	if (result == NULL)
 	{
 		result = (OpenGL_Function_Pointer)GetProcAddress(globalLibraryPtr, name);
 
 		if (result == NULL)
 		{
-			//printf("Not found function: %s\n", name);
-			//abort();
+			printf("Not found function: %s\n", name);
+			abort();
 		}
 	}
 

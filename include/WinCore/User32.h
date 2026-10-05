@@ -1,4 +1,4 @@
-// Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
+/* Copyright(C) 2026 Evgeny Zoshchuk(JordanCpp).Licensed under LGPL - 3.0 - or -later. */
 
 #ifndef WinCore_User32_h
 #define WinCore_User32_h
@@ -10,21 +10,22 @@ extern "C" {
 #include <WinCore/Config.h>
 #include <WinCore/Types.h>
 
-typedef struct tagCREATESTRUCTA 
-{
-    LPVOID    lpCreateParams; // Pointer to value passed as the last param to CreateWindowEx
-    HINSTANCE hInstance;      // Handle to the module that owns the window
-    HMENU     hMenu;          // Handle to the menu to be used by the window
-    HWND      hwndParent;     // Handle to the parent window
-    int       cy;             // Height of the window, in pixels
-    int       cx;             // Width of the window, in pixels
-    int       y;              // Y-coordinate of the upper-left corner of the window
-    int       x;              // X-coordinate of the upper-left corner of the window
-    LONG      style;          // Style flags for the window
-    LPCSTR    lpszName;       // Name of the window (title string)
-    LPCSTR    lpszClass;      // Pointer to a null-terminated string specifying the class name
-    DWORD     dwExStyle;      // Extended style flags for the window
-} CREATESTRUCTA, * LPCREATESTRUCTA;
+    typedef struct tagCREATESTRUCTA
+    {
+        LPVOID    lpCreateParams; /* Pointer to value passed as the last param to CreateWindowEx */
+        HINSTANCE hInstance;      /* Handle to the module that owns the window */
+        HMENU     hMenu;          /* Handle to the menu to be used by the window */
+        HWND      hwndParent;     /* Handle to the parent window */
+        int       cy;             /* Height of the window, in pixels */
+        int       cx;             /* Width of the window, in pixels */
+        int       y;              /* Y-coordinate of the upper-left corner of the window */
+        int       x;              /* X-coordinate of the upper-left corner of the window */
+        LONG      style;          /* Style flags for the window */
+        LPCSTR    lpszName;       /* Name of the window (title string) */
+        LPCSTR    lpszClass;      /* Pointer to a null-terminated string specifying the class name */
+        DWORD     dwExStyle;      /* Extended style flags for the window */
+    } CREATESTRUCTA, * LPCREATESTRUCTA;
+
 
 #define PM_NOREMOVE 0x0000
 #define PM_REMOVE   0x0001

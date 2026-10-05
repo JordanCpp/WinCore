@@ -1,4 +1,4 @@
-// Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
+/* Copyright(C) 2026 Evgeny Zoshchuk(JordanCpp).Licensed under LGPL - 3.0 - or -later. */
 
 #define OPENGL_IMPLEMENTATION
 #include "OpenGL.h"
@@ -13,13 +13,14 @@ GLuint textureID;
 
 void CreateCheckerboardTexture()
 {
+    int i, j, c;
     GLubyte textureData[TEX_SIZE][TEX_SIZE][4];
 
-    for (int i = 0; i < TEX_SIZE; i++)
+    for (i = 0; i < TEX_SIZE; i++)
     {
-        for (int j = 0; j < TEX_SIZE; j++)
+        for (j = 0; j < TEX_SIZE; j++)
         {
-            int c = ((((i & 0x8) == 0) ^ ((j & 0x8) == 0))) * 255;
+            c = ((((i & 0x8) == 0) ^ ((j & 0x8) == 0))) * 255;
 
             textureData[i][j][0] = (GLubyte)c;
             textureData[i][j][1] = (GLubyte)c;

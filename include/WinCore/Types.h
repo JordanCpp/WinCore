@@ -1,4 +1,4 @@
-// Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
+/* Copyright(C) 2026 Evgeny Zoshchuk(JordanCpp).Licensed under LGPL - 3.0 - or -later. */
 
 #ifndef WinCore_Types_h
 #define WinCore_Types_h
@@ -54,4 +54,4 @@ typedef const CHAR* LPCSTR, * PCSTR;
 
 typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
 
-#endif // WinCore_Types_h
+#endif

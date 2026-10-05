@@ -1,9 +1,9 @@
 // Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
 
+#include <SDL3/SDL_video.h>
 #include <WinCore/OpenGLFunc.hpp>
-#include <WinCore/Application.hpp>
 
-PROC wglGetProcAddress(LPCSTR unnamedParam1)
+void* LoadGLFunction(const char* name)
 {
-	return LoadGLFunction(unnamedParam1);
+	return (void*)SDL_GL_GetProcAddress(name);
 }
