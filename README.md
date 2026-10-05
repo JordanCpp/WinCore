@@ -28,17 +28,6 @@ Instead of forcing developers to refit or completely rewrite time-tested procedu
 
 ---
 
-## Architecture Highlights
-
-- **Pure C++98 Enforcement:** Avoids modern extensions (`auto`, lambdas, standard smart pointers, `<stdint.h>`) to ensure successful compilation on legacy systems, embedded environments, and vintage toolchains (e.g., retro-console SDKs).
-- **Sub-system Emulation Layer:** Implements standalone versions of `User32` and `Gdi32` routines (`RegisterClassA`, `CreateWindowExA`, `GetMessageA`, `DispatchMessageA`, `wglCreateContext`, `SwapBuffers`) independent of native Microsoft headers.
-- **64-bit Safe Type Mapping:** Custom memory types (`UINT_PTR`, `LONG_PTR`, `WPARAM`, `LPARAM`) adapt dynamically using preprocessor macros across 32-bit and 64-bit compiler architectures. This eliminates pointer-truncation memory bugs and Segmentation Faults on x64 OS.
-- **Advanced Event Routing:** Features a isolated `EventTranslator` component that translates native subsystem messages (like `SDL_Event`) into standard Win32 `MSG` structures, processing virtual-key maps (`VK_*`) and system controls.
-- **Deterministic Queue Emulation:** Emplements a specialized manual messaging queue inside the `EventHandler` to prevent message loss. This guarantees that synthetic messages, such as **`WM_QUIT`** triggered by `PostQuitMessage`, are executed sequentially before the event loop drops out.
-- **Safe Lifecycle Resource Management:** The `WindowManager` index decouples handle lookup (`HWND` -> `Window*`) from memory allocation, guarding the layout against double-free errors upon window destruction.
-
----
-
 ## Scope & Architectural Focus
 
 To ensure lightweight execution, ultra-portability, and clean maintenance, **WinCore does not aim to emulate the entire gargantuan Win32 API surface**. Instead, it strictly targets the essential multimedia and game-loop sub-systems required to run high-performance 2D and 3D engines.
@@ -53,34 +42,6 @@ To ensure lightweight execution, ultra-portability, and clean maintenance, **Win
 - **Audio Sub-system (Roadmap):** Low-level **DirectSound** buffer management and hardware mixer emulation.
 
 This tailored subset covers the execution matrix for the vast majority of historical and modern interactive software, keeping the framework lean, deterministic, and highly optimized.
-
----
-
-## Repository Structure
-
-```text
-├── dependencies/               # Pre-compiled third-party binaries (SDL2/SDL3)
-├── include/
-│   └── WinCore/
-│       ├── GL/                 # Internal OpenGL bindings
-│       ├── Application.hpp     # Engine State Machinery
-│       ├── ClassRegistrator.hpp# Win32 WNDCLASSA metadata container
-│       ├── EventTranslator.hpp # Static translation map (SDL to Win32)
-│       ├── WindowManager.hpp   # Double-Free protected HWND lookup table
-│       ├── Types.h             # Portable C++98 architectural type system
-│       └── Windows.h           # Drop-in Win32 replacement header
-└── source/
-    └── WinCore/
-        ├── Application.cpp     # Context assignment, creation and dispatch loops
-        ├── ClassRegistrator.cpp# Deep-copy string memory safe registry
-        ├── WindowManager.cpp   # Window indexing and handle verification
-        ├── User32.cpp          # Emulated User32 API hook overrides
-        ├── Gdi32.cpp           # Gdi32 / WGL simulation and buffer swaps
-        └── Backends/
-            ├── SDL2/           # SDL2 windowing and poll structures
-            ├── SDL3/           # SDL3 experimental backend wrapper
-            └── Null/           # Headless target interface
-```
 
 ---
 
@@ -155,3 +116,21 @@ On Windows builds, CMake triggers a `POST_BUILD` asset deployment step, automati
 
 Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp).  
 Licensed under the terms of the **LGPL-3.0-or-later** license. Independent software vendors can link against this library without open-sourcing their application code, provided the framework modifications remain open-source.
+
+---
+
+## Showcase Gallery
+
+The images below demonstrate WinCore's hardware/software subsystem emulation layer natively executing classical OpenGL 1.2 fixed-function pipeline techniques across platforms:
+
+---
+
+### Core Fixed-Function Techniques
+
+| Gouraud vs Flat Shading | Dynamic Spotlight |
+| :---: | :---: |
+| <img src="screenshots/OpenGL1.2GouraudvsFlat.png" width="400" alt="Gouraud vs Flat Shading"/> | <img src="screenshots/OpenGL1.2DynamicSpotlight.png" width="400" alt="Dynamic Spotlight"/> |
+
+| Textured 3D Cube | Vertex Arrays |
+| :---: | :---: |
+| <img src="screenshots/OpenGL1.2Textured3DCube.png" width="400" alt="Textured 3D Cube"/> | <img src="screenshots/OpenGL1.2VertexArrays.png" width="400" alt="Vertex Arrays"/> |

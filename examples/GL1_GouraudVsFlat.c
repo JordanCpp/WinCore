@@ -78,6 +78,11 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     switch (msg)
     {
     case WM_KEYDOWN:
+        if (wParam == 'X' || wParam == 'x')
+        {
+            SaveScreenshotBMP("OpenGL 1.2 - Gouraud vs Flat.bmp", 800, 600);
+        }
+
         if (wParam == VK_SPACE)
         {
             use_smooth = !use_smooth;
