@@ -36,6 +36,25 @@ void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
         winMsg.message = WM_MOUSEMOVE;
         winMsg.pt.x = static_cast<LONG>(sdlEvent.motion.x);
         winMsg.pt.y = static_cast<LONG>(sdlEvent.motion.y);
+        winMsg.lParam = (static_cast<LPARAM>(winMsg.pt.y) << 16) | (static_cast<LPARAM>(winMsg.pt.x) & 0xFFFF);
+        break;
+
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+        if (sdlEvent.button.button == SDL_BUTTON_LEFT) winMsg.message = WM_LBUTTONDOWN;
+        else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) winMsg.message = WM_RBUTTONDOWN;
+        else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) winMsg.message = WM_MBUTTONDOWN;
+        winMsg.pt.x = static_cast<LONG>(sdlEvent.button.x);
+        winMsg.pt.y = static_cast<LONG>(sdlEvent.button.y);
+        winMsg.lParam = (static_cast<LPARAM>(winMsg.pt.y) << 16) | (static_cast<LPARAM>(winMsg.pt.x) & 0xFFFF);
+        break;
+
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+        if (sdlEvent.button.button == SDL_BUTTON_LEFT) winMsg.message = WM_LBUTTONUP;
+        else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) winMsg.message = WM_RBUTTONUP;
+        else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) winMsg.message = WM_MBUTTONUP;
+        winMsg.pt.x = static_cast<LONG>(sdlEvent.button.x);
+        winMsg.pt.y = static_cast<LONG>(sdlEvent.button.y);
+        winMsg.lParam = (static_cast<LPARAM>(winMsg.pt.y) << 16) | (static_cast<LPARAM>(winMsg.pt.x) & 0xFFFF);
         break;
 
     case SDL_EVENT_WINDOW_RESIZED:
