@@ -77,3 +77,19 @@ BOOL UpdateWindow(HWND hWnd)
 {
 	return MainApplication().UpdateWindowImpl(hWnd);
 }
+
+BOOL GetWindowRect(HWND hWnd, LPRECT lpRect)
+{
+	if (!hWnd || !lpRect)
+	{
+		return false;
+	}
+
+	Window* window = MainApplication()._windowManager.Find(hWnd);
+	if (!window)
+	{
+		return false;
+	}
+
+	return window->GetWindowRect(lpRect);
+}

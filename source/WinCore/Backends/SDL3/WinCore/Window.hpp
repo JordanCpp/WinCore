@@ -21,6 +21,7 @@ public:
 	BOOL GetClientRectImpl(LPRECT lpRect);
 	BOOL ShowWindow(int nCmdShow);
 	BOOL UpdateWindow();
+	BOOL GetWindowRect(LPRECT lpRect);
 private:
 	SDL_Window*    _window;
 	SDL_Renderer*  _renderer;

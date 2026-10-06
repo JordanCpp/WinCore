@@ -288,3 +288,27 @@ BOOL Window::UpdateWindow()
 
 	return true;
 }
+
+BOOL Window::GetWindowRect(LPRECT lpRect)
+{
+	if (!lpRect || !_window)
+	{
+		return false;
+	}
+
+	int x = 0;
+	int y = 0;
+	int w = 0;
+	int h = 0;
+
+	SDL_GetWindowPosition(_window, &x, &y);
+
+	SDL_GetWindowSize(_window, &w, &h);
+
+	lpRect->left = static_cast<LONG>(x);
+	lpRect->top = static_cast<LONG>(y);
+	lpRect->right = static_cast<LONG>(x + w);
+	lpRect->bottom = static_cast<LONG>(y + h);
+
+	return true;
+}

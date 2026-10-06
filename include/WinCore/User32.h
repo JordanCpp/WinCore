@@ -168,6 +168,8 @@ WINCORE_API BOOL ShowWindow(HWND hWnd, int nCmdShow);
 
 WINCORE_API BOOL UpdateWindow(HWND hWnd);
 
+WINCORE_API BOOL GetWindowRect(HWND hWnd, LPRECT lpRect);
+
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 
 #ifdef UNICODE
