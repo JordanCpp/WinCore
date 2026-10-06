@@ -9,6 +9,7 @@
 class EventHandler
 {
 public:
+    EventHandler(WindowManager& windowManager);
     void PumpEvents();
     bool WaitAndPush();
     MessageQueue& Messages();

@@ -4,7 +4,8 @@
 
 static Application _application;
 
-Application::Application()
+Application::Application() :
+	_eventHandler(_windowManager)
 {
 }
 

@@ -2,18 +2,66 @@
 
 #include <WinCore/EventTranslator.hpp>
 
+EventTranslator::EventTranslator(WindowManager& windowManager) :
+    _windowManager(windowManager)
+{
+}
+
 void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
 {
     winMsg.hwnd = NULL;
     winMsg.wParam = 0;
     winMsg.lParam = 0;
-    winMsg.time = static_cast<DWORD>(sdlEvent.common.timestamp / 1000000);
-    winMsg.pt.x = 0;
-    winMsg.pt.y = 0;
+    winMsg.time   = static_cast<DWORD>(sdlEvent.common.timestamp / 1000000);
+    winMsg.pt.x   = 0;
+    winMsg.pt.y   = 0;
+
+    Uint32 windowID = 0;
+
+    switch (sdlEvent.type)
+    {
+    case SDL_EVENT_KEY_DOWN:
+    case SDL_EVENT_KEY_UP:
+        windowID = sdlEvent.key.windowID;
+        break;
+
+    case SDL_EVENT_MOUSE_MOTION:
+        windowID = sdlEvent.motion.windowID;
+        break;
+
+    case SDL_EVENT_MOUSE_BUTTON_DOWN:
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+        windowID = sdlEvent.button.windowID;
+        break;
+
+    default:
+        if (sdlEvent.type >= SDL_EVENT_WINDOW_FIRST &&
+            sdlEvent.type <= SDL_EVENT_WINDOW_LAST)
+        {
+            windowID = sdlEvent.window.windowID;
+        }
+        break;
+    }
+
+    if (windowID != 0)
+    {
+        SDL_Window* sdlWindow = SDL_GetWindowFromID(windowID);
+        if (sdlWindow)
+        {
+            Window* w = _windowManager.FindNative(sdlWindow);
+            if (w)
+            {
+                winMsg.hwnd = (HWND)w;
+            }
+        }
+    }
 
     switch (sdlEvent.type)
     {
     case SDL_EVENT_QUIT:
+        winMsg.message = WM_QUIT;
+        break;
+
     case SDL_EVENT_WINDOW_CLOSE_REQUESTED:
         winMsg.message = WM_CLOSE;
         break;
@@ -40,8 +88,8 @@ void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
         break;
 
     case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        if (sdlEvent.button.button == SDL_BUTTON_LEFT) winMsg.message = WM_LBUTTONDOWN;
-        else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) winMsg.message = WM_RBUTTONDOWN;
+        if (sdlEvent.button.button == SDL_BUTTON_LEFT)        winMsg.message = WM_LBUTTONDOWN;
+        else if (sdlEvent.button.button == SDL_BUTTON_RIGHT)  winMsg.message = WM_RBUTTONDOWN;
         else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) winMsg.message = WM_MBUTTONDOWN;
         winMsg.pt.x = static_cast<LONG>(sdlEvent.button.x);
         winMsg.pt.y = static_cast<LONG>(sdlEvent.button.y);
@@ -49,8 +97,8 @@ void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
         break;
 
     case SDL_EVENT_MOUSE_BUTTON_UP:
-        if (sdlEvent.button.button == SDL_BUTTON_LEFT) winMsg.message = WM_LBUTTONUP;
-        else if (sdlEvent.button.button == SDL_BUTTON_RIGHT) winMsg.message = WM_RBUTTONUP;
+        if (sdlEvent.button.button == SDL_BUTTON_LEFT)        winMsg.message = WM_LBUTTONUP;
+        else if (sdlEvent.button.button == SDL_BUTTON_RIGHT)  winMsg.message = WM_RBUTTONUP;
         else if (sdlEvent.button.button == SDL_BUTTON_MIDDLE) winMsg.message = WM_MBUTTONUP;
         winMsg.pt.x = static_cast<LONG>(sdlEvent.button.x);
         winMsg.pt.y = static_cast<LONG>(sdlEvent.button.y);

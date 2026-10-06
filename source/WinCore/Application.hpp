@@ -19,10 +19,10 @@ public:
 	Application();
 	~Application();
 	Initializer      _initializer;
+	WindowManager    _windowManager;
 	EventHandler     _eventHandler;
 	ClassRegistrator _classRegistrator;
 	WindowCreator    _windowCreator;
-	WindowManager    _windowManager;
 	SharedCreator    _sharedCreator;
 	Ticks            _ticks;
 	Cursor           _cursor;

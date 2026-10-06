@@ -2,6 +2,11 @@
 
 #include <WinCore/EventHandler.hpp>
 
+EventHandler::EventHandler(WindowManager& windowManager) :
+    _translator(windowManager)
+{
+}
+
 void EventHandler::PumpEvents()
 {
     SDL_Event event;
