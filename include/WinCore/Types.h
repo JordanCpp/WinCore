@@ -60,4 +60,7 @@ typedef LRESULT(CALLBACK* WNDPROC)(HWND, UINT, WPARAM, LPARAM);
 
 #define HIWORD(l) ((WORD)((((DWORD_PTR)(l)) >> 16) & 0xffff))
 
+#define TRUE  1
+#define FALSE 0
+
 #endif

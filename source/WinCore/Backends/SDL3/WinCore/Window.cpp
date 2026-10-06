@@ -164,10 +164,10 @@ BOOL Window::MakeCurrent()
 
 	if (SDL_GL_MakeCurrent(_window, _glContext) == 0)
 	{
-		return true;
+		return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }
 
 BOOL Window::SwapBuffers()
@@ -177,14 +177,14 @@ BOOL Window::SwapBuffers()
 		return SDL_GL_SwapWindow(_window);
 	}
 
-	return false;
+	return FALSE;
 }
 
 BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight)
 {
 	if (_glContext)
 	{
-		return false;
+		return FALSE;
 	}
 
 	if (!_renderer)
@@ -193,14 +193,14 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 
 		if (!_renderer)
 		{
-			return false;
+			return FALSE;
 		}
 	}
 
 	SDL_Texture* texture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_XRGB8888, SDL_TEXTUREACCESS_STREAMING, srcWidth, srcHeight);
 	if (!texture) 
 	{
-		return false;
+		return FALSE;
 	}
 
 	int pitch = srcWidth * 4;
@@ -209,7 +209,7 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 	{
 		SDL_DestroyTexture(texture);
 
-		return false;
+		return FALSE;
 	}
 
 	SDL_FRect srcRect;
@@ -238,14 +238,14 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 	SDL_RenderPresent(_renderer);
 	SDL_DestroyTexture(texture);
 
-	return true;
+	return TRUE;
 }
 
 BOOL Window::GetClientRectImpl(LPRECT lpRect)
 {
 	if (!lpRect || !_window)
 	{
-		return false;
+		return true;
 	}
 
 	int w = 0;
@@ -258,24 +258,24 @@ BOOL Window::GetClientRectImpl(LPRECT lpRect)
 	lpRect->right  = static_cast<LONG>(w);
 	lpRect->bottom = static_cast<LONG>(h);
 
-	return true;
+	return TRUE;
 }
 
 BOOL Window::ShowWindow(int nCmdShow)
 {
-	if (!_window) return false;
+	if (!_window) return FALSE;
 
 	if (nCmdShow == SW_HIDE) 
 	{
 		SDL_HideWindow(_window);
 		_baseWindow.dwStyle &= ~WS_VISIBLE;
-		return false;
+		return FALSE;
 	}
 	else
 	{
 		SDL_ShowWindow(_window);
 		_baseWindow.dwStyle |= WS_VISIBLE;
-		return true;
+		return FALSE;
 	}
 }
 
@@ -283,17 +283,17 @@ BOOL Window::UpdateWindow()
 {
 	if (!_window)
 	{
-		return false;
+		return FALSE;
 	}
 
-	return true;
+	return TRUE;
 }
 
 BOOL Window::GetWindowRect(LPRECT lpRect)
 {
 	if (!lpRect || !_window)
 	{
-		return false;
+		return FALSE;
 	}
 
 	int x = 0;
@@ -310,5 +310,5 @@ BOOL Window::GetWindowRect(LPRECT lpRect)
 	lpRect->right = static_cast<LONG>(x + w);
 	lpRect->bottom = static_cast<LONG>(y + h);
 
-	return true;
+	return TRUE;
 }
