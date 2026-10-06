@@ -10,6 +10,7 @@
 #include <WinCore/EventHandler.hpp>
 #include <WinCore/SharedCreator.hpp>
 #include <WinCore/Ticks.hpp>
+#include <WinCore/Cursor.hpp>
 
 class Application
 {
@@ -48,6 +49,7 @@ public:
 	WindowManager    _windowManager;
 	SharedCreator    _sharedCreator;
 	Ticks            _ticks;
+	Cursor           _cursor;
 };
 
 Application& MainApplication();

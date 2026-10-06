@@ -68,6 +68,10 @@ WINCORE_API int ReleaseDC(HWND hWnd, HDC hDC);
 WINCORE_API BOOL GetClientRect(HWND hWnd, LPRECT lpRect);
 WINCORE_API BOOL ShowWindow(HWND hWnd, int nCmdShow);
 WINCORE_API BOOL UpdateWindow(HWND hWnd);
+WINCORE_API BOOL GetWindowRect(HWND hWnd, LPRECT lpRect);
+WINCORE_API BOOL GetCursorPos(LPPOINT lpPoint);
+WINCORE_API BOOL SetCursorPos(int x, int y);
+WINCORE_API int ShowCursor(BOOL bShow);
 ```
 
 #### 🎨 Gdi32.dll

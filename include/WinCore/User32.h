@@ -97,11 +97,11 @@ extern "C" {
 #define WS_EX_OVERLAPPEDWINDOW  (WS_EX_WINDOWEDGE | WS_EX_CLIENTEDGE)
 #define WS_EX_PALETTEWINDOW     (WS_EX_WINDOWEDGE | WS_EX_TOOLWINDOW | WS_EX_TOPMOST)
 
-typedef struct POINT
-{
-    LONG  x;
-    LONG  y;
-} POINT;
+    typedef struct tagPOINT 
+    {
+        LONG x;
+        LONG y;
+    } POINT, * PPOINT, * LPPOINT;
 
 typedef struct MSG
 {
@@ -169,6 +169,12 @@ WINCORE_API BOOL ShowWindow(HWND hWnd, int nCmdShow);
 WINCORE_API BOOL UpdateWindow(HWND hWnd);
 
 WINCORE_API BOOL GetWindowRect(HWND hWnd, LPRECT lpRect);
+
+WINCORE_API BOOL GetCursorPos(LPPOINT lpPoint);
+
+WINCORE_API BOOL SetCursorPos(int x, int y);
+
+WINCORE_API int ShowCursor(BOOL bShow);
 
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 

@@ -93,3 +93,18 @@ BOOL GetWindowRect(HWND hWnd, LPRECT lpRect)
 
 	return window->GetWindowRect(lpRect);
 }
+
+BOOL GetCursorPos(LPPOINT lpPoint)
+{
+	return MainApplication()._cursor.GetCursorPos(lpPoint);
+}
+
+BOOL SetCursorPos(int x, int y)
+{
+	return MainApplication()._cursor.SetCursorPos(x, y);
+}
+
+int ShowCursor(BOOL bShow)
+{
+	return MainApplication()._cursor.ShowCursor(bShow);
+}
