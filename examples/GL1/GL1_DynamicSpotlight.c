@@ -107,8 +107,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SaveScreenshotBMP("OpenGL 1.2 - Dynamic Spotlight.bmp", 800, 600);
         }
         break;
-    case WM_CLOSE:   PostQuitMessage(0); break;
-    case WM_DESTROY: PostQuitMessage(0); break;
+    case WM_CLOSE:
+        DestroyWindow(hwnd);
+        break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
@@ -237,8 +241,6 @@ int main()
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
-
-    DestroyWindow(hwnd);
 
     return 0;
 }

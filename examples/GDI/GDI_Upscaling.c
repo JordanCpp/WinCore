@@ -28,7 +28,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_CLOSE:
-        PostQuitMessage(0);
+        DestroyWindow(hwnd);
         break;
     case WM_DESTROY:
         PostQuitMessage(0);
@@ -154,7 +154,6 @@ int main(void)
 
     free(pixelBuffer);
     ReleaseDC(hwnd, hDC);
-    DestroyWindow(hwnd);
 
     return 0;
 }

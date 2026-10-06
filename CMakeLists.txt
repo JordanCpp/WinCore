@@ -77,6 +77,7 @@ file(GLOB WINCORE_SOURCES
     "source/WinCore/Gdi32.cpp"
     "source/WinCore/Kernel32.cpp"
     "source/WinCore/OpenGL32.cpp"
+    "source/WinCore/MessageQueue.cpp"
 )
 
 if (BACKEND_SDL2)

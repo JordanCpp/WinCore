@@ -106,8 +106,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             SaveScreenshotBMP("OpenGL 1.2 - Textured 3D Cube.bmp", 800, 600);
         }
         break;
-    case WM_CLOSE:   PostQuitMessage(0); break;
-    case WM_DESTROY: PostQuitMessage(0); break;
+    case WM_CLOSE:
+        DestroyWindow(hwnd);
+        break;
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        break;
     }
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
@@ -193,8 +197,6 @@ int main()
     }
 
     glDeleteTextures(1, &textureID);
-
-    DestroyWindow(hwnd);
 
     return 0;
 }

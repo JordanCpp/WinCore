@@ -4,7 +4,10 @@
 
 ATOM RegisterClassA(const WNDCLASSA* lpWndClass)
 {
-	if (!lpWndClass) return 0;
+	if (!lpWndClass)
+	{
+		return 0;
+	}
 
 	MainApplication()._classRegistrator.Append(lpWndClass);
 
@@ -14,7 +17,11 @@ ATOM RegisterClassA(const WNDCLASSA* lpWndClass)
 HWND CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
 	Window* window = MainApplication()._windowCreator.Create(dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-	if (!window) return NULL;
+	
+	if (!window)
+	{
+		return NULL;
+	}
 
 	HWND hFakeWnd = (HWND)window;
 
@@ -52,12 +59,14 @@ BOOL DestroyWindow(HWND hWnd)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return FALSE;
 	}
 
 	WindowClassA windowClass;
+
 	if (MainApplication()._classRegistrator.Find(window->GetClassName(), windowClass))
 	{
 		windowClass.lpfnWndProc(hWnd, WM_DESTROY, 0, 0);
@@ -74,31 +83,38 @@ BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 		return FALSE;
 	}
 
-	MSG msg = { 0 };
+	EventHandler& events = MainApplication()._eventHandler;
+	MessageQueue& queue  = events.Messages();
 
-	if (MainApplication()._eventHandler.IsRunning())
+	for (;;)
 	{
-		if (MainApplication()._eventHandler.WaitEvent(msg))
+		events.PumpEvents();
+
+		MSG msg;
+		bool ok = (hWnd == NULL && wMsgFilterMin == 0 && wMsgFilterMax == 0) ? queue.Pop(msg) : queue.PeekFiltered(msg, true, hWnd, wMsgFilterMin, wMsgFilterMax);
+
+		if (ok)
 		{
-			lpMsg->hwnd = msg.hwnd;
-			lpMsg->message = msg.message;
-			lpMsg->wParam = msg.wParam;
-			lpMsg->lParam = msg.lParam;
-			lpMsg->time = msg.time;
-			lpMsg->pt = msg.pt;
+			*lpMsg = msg;
 
 			if (msg.message == WM_QUIT)
 			{
-				MainApplication()._eventHandler.StopEvents();
-
 				return FALSE;
 			}
 
 			return TRUE;
 		}
-	}
 
-	return FALSE;
+		if (!queue.IsRunning())
+		{
+			return FALSE;
+		}
+
+		if (!events.WaitAndPush())
+		{
+			return FALSE;
+		}
+	}
 }
 
 BOOL PeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
@@ -108,43 +124,38 @@ BOOL PeekMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax
 		return FALSE;
 	}
 
-	MSG msg = { 0 };
+	EventHandler& events = MainApplication()._eventHandler;
+	events.PumpEvents();
+
+	MessageQueue& queue = events.Messages();
 	bool bRemove = (wRemoveMsg == PM_REMOVE);
 
-	if (MainApplication()._eventHandler.GetEvent(msg, bRemove))
-	{
-		lpMsg->hwnd = msg.hwnd;
-		lpMsg->message = msg.message;
-		lpMsg->wParam = msg.wParam;
-		lpMsg->lParam = msg.lParam;
-		lpMsg->time = msg.time;
-		lpMsg->pt = msg.pt;
+	MSG msg;
+	bool ok = (hWnd == NULL && wMsgFilterMin == 0 && wMsgFilterMax == 0) ? queue.Peek(msg, bRemove) : queue.PeekFiltered(msg, bRemove, hWnd, wMsgFilterMin, wMsgFilterMax);
 
-		if (msg.message == WM_QUIT && bRemove)
-		{
-			MainApplication()._eventHandler.StopEvents();
-		}
+	if (!ok) return FALSE;
 
-		return TRUE;
-	}
+	*lpMsg = msg;
 
-	return FALSE;
+	return TRUE;
 }
 
 void PostQuitMessage(int nExitCode)
 {
-	MSG quitMsg = { 0 };
-	quitMsg.message = WM_QUIT;
-	quitMsg.wParam = (WPARAM)nExitCode;
-
-	MainApplication()._eventHandler.PushMessage(quitMsg);
+	MainApplication()._eventHandler.Messages().PostQuit((WPARAM)nExitCode);
 }
 
 LRESULT DefWindowProcA(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	if (Msg == WM_CLOSE)
+	switch (Msg)
 	{
-		MainApplication()._eventHandler.StopEvents();
+	case WM_CLOSE:
+		if (hWnd)
+		{
+			DestroyWindow(hWnd);
+		}
+		
+		return 0;
 	}
 
 	return 0;
@@ -154,7 +165,6 @@ LRESULT DispatchMessageA(const MSG* lpMsg)
 {
 	if (!lpMsg)
 	{
-
 		return 0;
 	}
 
@@ -171,16 +181,18 @@ LRESULT DispatchMessageA(const MSG* lpMsg)
 				return windowClass.lpfnWndProc(lpMsg->hwnd, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
 			}
 		}
-	}
-	else
-	{
-		for (ClassRegistrator::container::const_iterator i = MainApplication()._classRegistrator.GetClasses().begin(); i != MainApplication()._classRegistrator.GetClasses().end(); i++)
-		{
-			i->second.lpfnWndProc(NULL, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
-		}
+
+		return 0;
 	}
 
-	return true;
+	const ClassRegistrator::container& classes = MainApplication()._classRegistrator.GetClasses();
+
+	for (ClassRegistrator::container::const_iterator i = classes.begin(); i != classes.end(); ++i)
+	{
+		i->second.lpfnWndProc(NULL, lpMsg->message, lpMsg->wParam, lpMsg->lParam);
+	}
+
+	return 0;
 }
 
 BOOL TranslateMessage(const MSG* lpMsg)
@@ -206,6 +218,7 @@ BOOL GetClientRect(HWND hWnd, LPRECT lpRect)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return FALSE;
@@ -222,6 +235,7 @@ BOOL ShowWindow(HWND hWnd, int nCmdShow)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return FALSE;
@@ -238,6 +252,7 @@ BOOL UpdateWindow(HWND hWnd)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return FALSE;
@@ -254,6 +269,7 @@ BOOL GetWindowRect(HWND hWnd, LPRECT lpRect)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return false;
@@ -290,6 +306,7 @@ BOOL SetWindowTextA(HWND hWnd, LPCSTR lpString)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return FALSE;

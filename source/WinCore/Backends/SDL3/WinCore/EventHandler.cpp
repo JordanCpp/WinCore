@@ -2,75 +2,34 @@
 
 #include <WinCore/EventHandler.hpp>
 
-EventHandler::EventHandler() :
-	_running(true)
+void EventHandler::PumpEvents()
 {
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event))
+    {
+        MSG msg;
+        _translator.Translate(event, msg);
+        _queue.Push(msg);
+    }
 }
 
-bool EventHandler::IsRunning()
+bool EventHandler::WaitAndPush()
 {
-	return _running;
+    SDL_Event event;
+
+    if (!SDL_WaitEvent(&event))
+    {
+        return false;
+    }
+
+    MSG msg;
+    _translator.Translate(event, msg);
+    _queue.Push(msg);
+    return true;
 }
 
-void EventHandler::StopEvents()
-{
-	_running = false;
-}
-
-void EventHandler::PushMessage(const MSG& msg)
-{
-	_manualEvents.push_back(msg);
-}
-
-bool EventHandler::GetEvent(MSG& msg, bool bRemove)
-{
-	if (!_manualEvents.empty())
-	{
-		msg = _manualEvents.front();
-
-		if (bRemove)
-		{
-			_manualEvents.pop_front();
-		}
-
-		return true;
-	}
-
-	SDL_Event event = { 0 };
-
-	if (SDL_PollEvent(&event))
-	{
-		_translator.Translate(event, msg);
-
-		if (!bRemove)
-		{
-			_manualEvents.push_front(msg);
-		}
-
-		return true;
-	}
-
-	return false;
-}
-
-bool EventHandler::WaitEvent(MSG& msg)
-{
-	if (!_manualEvents.empty())
-	{
-		msg = _manualEvents.front();
-		_manualEvents.pop_front();
-
-		return true;
-	}
-
-	SDL_Event event = { 0 };
-
-	if (SDL_WaitEvent(&event))
-	{
-		_translator.Translate(event, msg);
-
-		return true;
-	}
-
-	return false;
+MessageQueue& EventHandler::Messages()
+{ 
+    return _queue; 
 }
