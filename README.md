@@ -316,6 +316,10 @@ The images below demonstrate WinCore executing classical OpenGL 1.2 fixed-functi
 | :---: | :---: |
 | <img src="screenshots/OpenGL1.2Textured3DCube.png" width="400" alt="Textured 3D Cube"/> | <img src="screenshots/OpenGL1.2VertexArrays.png" width="400" alt="Vertex Arrays"/> |
 
+| GDI Upscaling | GDI RGB Buffer |
+| :---: | :---: |
+| <img src="screenshots/GDI_Upscaling.png" width="400" alt="GDI Upscaling"/> | <img src="screenshots/GDI_RgbBuffer.png" width="400" alt="GDI RGB Buffer"/> |
+
 ---
 
 ## Licensing
