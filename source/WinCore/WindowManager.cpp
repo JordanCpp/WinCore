@@ -67,8 +67,8 @@ BOOL WindowManager::Destroy(HWND handle)
 		_windows.erase(i);
 		delete window;
 
-		return true;
+		return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }

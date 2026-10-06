@@ -24,13 +24,16 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
             PostQuitMessage(0);
         }
         break;
+
     case WM_CLOSE:
         PostQuitMessage(0);
         break;
+
     case WM_DESTROY:
         PostQuitMessage(0);
         break;
     }
+
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
@@ -47,17 +50,10 @@ int main(void)
 
     memset(&wc, 0, sizeof(WNDCLASS));
     wc.lpszClassName = "WinCoreGDIRendererClass";
-    wc.lpfnWndProc = WndProc;
+    wc.lpfnWndProc   = WndProc;
     RegisterClass(&wc);
 
-    hwnd = CreateWindow(
-        wc.lpszClassName,
-        "WinCore Demo - Pure C Software Rendering (SetDIBitsToDevice)",
-        0,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        SCREEN_WIDTH, SCREEN_HEIGHT,
-        NULL, NULL, wc.hInstance, NULL
-    );
+    hwnd = CreateWindow(wc.lpszClassName, "Pure C Software Rendering (SetDIBitsToDevice)", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, SCREEN_WIDTH, SCREEN_HEIGHT, NULL, NULL, wc.hInstance, NULL);
 
     if (!hwnd)
     {

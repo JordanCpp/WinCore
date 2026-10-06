@@ -50,12 +50,12 @@ int main(void)
 
     memset(&wc, 0, sizeof(WNDCLASS));
     wc.lpszClassName = "WinCoreGDIStretchClass";
-    wc.lpfnWndProc = WndProc;
+    wc.lpfnWndProc   = WndProc;
     RegisterClass(&wc);
 
     hwnd = CreateWindow(
         wc.lpszClassName,
-        "WinCore Demo - Pure C Hardware Upscaling (StretchDIBits)",
+        "Pure C Hardware Upscaling (StretchDIBits)",
         0,
         CW_USEDEFAULT, CW_USEDEFAULT,
         WINDOW_WIDTH, WINDOW_HEIGHT,

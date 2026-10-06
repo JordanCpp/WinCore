@@ -57,13 +57,13 @@ BOOL Application::DestroyWindowImpl(HWND hWnd)
 {
 	if (!hWnd)
 	{
-		return false;
+		return FALSE;
 	}
 
 	Window* window = _windowManager.Find(hWnd);
 	if (!window)
 	{
-		return false;
+		return FALSE;
 	}
 
 	WindowClassA windowClass;
@@ -80,7 +80,7 @@ BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UI
 {
 	if (!lpMsg)
 	{
-		return false;
+		return FALSE;
 	}
 
 	MSG msg = { 0 };
@@ -100,19 +100,22 @@ BOOL Application::GetMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UI
 			{
 				_eventHandler.StopEvents();
 
-				return false;
+				return FALSE;
 			}
 
-			return true;
+			return TRUE;
 		}
 	}
 
-	return false;
+	return FALSE;
 }
 
 BOOL Application::PeekMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
 {
-	if (!lpMsg) return false;
+	if (!lpMsg)
+	{
+		return FALSE;
+	}
 
 	MSG msg = { 0 };
 	bool bRemove = (wRemoveMsg == PM_REMOVE);
@@ -131,10 +134,10 @@ BOOL Application::PeekMessageAImpl(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, U
 			_eventHandler.StopEvents();
 		}
 
-		return true;
+		return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }
 
 void Application::PostQuitMessageImpl(int nExitCode)
@@ -191,7 +194,7 @@ LRESULT Application::DispatchMessageAImpl(const MSG* lpMsg)
 
 BOOL Application::TranslateMessageImpl(const MSG* lpMsg)
 {
-	return true;
+	return TRUE;
 }
 
 HDC Application::GetDCImpl(HWND hWnd)
@@ -220,7 +223,7 @@ BOOL Application::wglMakeCurrentImpl(HDC hdc, HGLRC hglrc)
 		return window->MakeCurrent();
 	}
 
-	return false;
+	return FALSE;
 }
 
 BOOL Application::SwapBuffers(HDC hdc)
@@ -232,7 +235,7 @@ BOOL Application::SwapBuffers(HDC hdc)
 		return window->SwapBuffers();
 	}
 
-	return false;
+	return FALSE;
 }
 
 int Application::ChoosePixelFormatImpl(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd)
@@ -253,10 +256,10 @@ BOOL Application::SetPixelFormatImpl(HDC hdc, int format, const PIXELFORMATDESCR
 
 	if (window)
 	{
-		return true;
+		return TRUE;
 	}
 
-	return false;
+	return FALSE;
 }
 
 HMODULE Application::LoadLibraryAImpl(LPCSTR lpLibFileName)
@@ -270,7 +273,7 @@ BOOL Application::FreeLibraryImpl(HMODULE hLibModule)
 
 	shared->Unload();
 
-	return true;
+	return TRUE;
 }
 
 FARPROC Application::GetProcAddressImpl(HMODULE hModule, LPCSTR lpProcName)
@@ -346,13 +349,13 @@ BOOL Application::GetClientRectAImpl(HWND hWnd, LPRECT lpRect)
 {
 	if (!hWnd || !lpRect)
 	{
-		return false;
+		return FALSE;
 	}
 
 	Window* window = _windowManager.Find(hWnd);
 	if (!window)
 	{
-		return false;
+		return FALSE;
 	}
 
 	return window->GetClientRectImpl(lpRect);
@@ -360,20 +363,32 @@ BOOL Application::GetClientRectAImpl(HWND hWnd, LPRECT lpRect)
 
 BOOL Application::ShowWindowAImpl(HWND hWnd, int nCmdShow)
 {
-	if (!hWnd) return false;
+	if (!hWnd)
+	{
+		return FALSE;
+	}
 
 	Window* window = _windowManager.Find(hWnd);
-	if (!window) return false;
+	if (!window)
+	{
+		return FALSE;
+	}
 
 	return window->ShowWindow(nCmdShow);
 }
 
 BOOL Application::UpdateWindowImpl(HWND hWnd)
 {
-	if (!hWnd) return false;
+	if (!hWnd)
+	{
+		return FALSE;
+	}
 
 	Window* window = _windowManager.Find(hWnd);
-	if (!window) return false;
+	if (!window)
+	{
+		return FALSE;
+	}
 
 	return window->UpdateWindow();
 }
