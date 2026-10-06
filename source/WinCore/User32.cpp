@@ -113,3 +113,19 @@ SHORT GetAsyncKeyState(int vKey)
 {
 	return MainApplication()._asyncKey.GetAsyncKeyStateImpl(vKey);
 }
+
+BOOL SetWindowTextA(HWND hWnd, LPCSTR lpString)
+{
+	if (!hWnd)
+	{
+		return FALSE;
+	}
+
+	Window* window = MainApplication()._windowManager.Find(hWnd);
+	if (!window)
+	{
+		return FALSE;
+	}
+
+	return window->SetWindowTextA(lpString);
+}

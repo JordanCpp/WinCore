@@ -241,7 +241,7 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 	return TRUE;
 }
 
-BOOL Window::GetClientRectImpl(LPRECT lpRect)
+BOOL Window::GetClientRect(LPRECT lpRect)
 {
 	if (!lpRect || !_window)
 	{
@@ -309,6 +309,20 @@ BOOL Window::GetWindowRect(LPRECT lpRect)
 	lpRect->top = static_cast<LONG>(y);
 	lpRect->right = static_cast<LONG>(x + w);
 	lpRect->bottom = static_cast<LONG>(y + h);
+
+	return TRUE;
+}
+
+BOOL Window::SetWindowTextA(LPCSTR lpString)
+{
+	if (!_window)
+	{
+		return FALSE;
+	}
+
+	_baseWindow.lpWindowName = lpString ? lpString : "";
+
+	SDL_SetWindowTitle(_window, _baseWindow.lpWindowName.c_str());
 
 	return TRUE;
 }

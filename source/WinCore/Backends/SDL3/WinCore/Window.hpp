@@ -18,10 +18,11 @@ public:
 	BOOL MakeCurrent();
 	BOOL SwapBuffers();
 	BOOL BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight);
-	BOOL GetClientRectImpl(LPRECT lpRect);
+	BOOL GetClientRect(LPRECT lpRect);
 	BOOL ShowWindow(int nCmdShow);
 	BOOL UpdateWindow();
 	BOOL GetWindowRect(LPRECT lpRect);
+	BOOL SetWindowTextA(LPCSTR lpString);
 private:
 	SDL_Window*    _window;
 	SDL_Renderer*  _renderer;

@@ -178,6 +178,8 @@ WINCORE_API int ShowCursor(BOOL bShow);
 
 WINCORE_API SHORT GetAsyncKeyState(int vKey);
 
+WINCORE_API BOOL SetWindowTextA(HWND hWnd, LPCSTR lpString);
+
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 
 #ifdef UNICODE
@@ -188,6 +190,7 @@ WINCORE_API SHORT GetAsyncKeyState(int vKey);
     #define PeekMessage      PeekMessageA
     #define DefWindowProc    DefWindowProcA
     #define DispatchMessage  DispatchMessageA
+    #define SetWindowText    SetWindowTextA
 #endif
 
 #ifdef __cplusplus

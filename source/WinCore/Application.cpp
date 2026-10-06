@@ -358,7 +358,7 @@ BOOL Application::GetClientRectAImpl(HWND hWnd, LPRECT lpRect)
 		return FALSE;
 	}
 
-	return window->GetClientRectImpl(lpRect);
+	return window->GetClientRect(lpRect);
 }
 
 BOOL Application::ShowWindowAImpl(HWND hWnd, int nCmdShow)
