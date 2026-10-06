@@ -4,17 +4,23 @@
 
 HMODULE LoadLibraryA(LPCSTR lpLibFileName)
 {
-	return MainApplication().LoadLibraryAImpl(lpLibFileName);
+	return (HMODULE)MainApplication()._sharedCreator.Create(lpLibFileName);
 }
 
 BOOL FreeLibrary(HMODULE hLibModule)
 {
-	return MainApplication().FreeLibraryImpl(hLibModule);
+	Shared* shared = (Shared*)(hLibModule);
+
+	shared->Unload();
+
+	return TRUE;
 }
 
 FARPROC GetProcAddress(HMODULE hModule, LPCSTR lpProcName)
 {
-	return MainApplication().GetProcAddressImpl(hModule, lpProcName);
+	Shared* shared = (Shared*)(hModule);
+
+	return (FARPROC)shared->GetFunction(lpProcName);
 }
 
 DWORD GetTickCount()

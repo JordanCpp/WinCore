@@ -56,7 +56,7 @@ int main(void)
     hwnd = CreateWindow(
         wc.lpszClassName,
         "Pure C Hardware Upscaling (StretchDIBits)",
-        0,
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
         WINDOW_WIDTH, WINDOW_HEIGHT,
         NULL, NULL, wc.hInstance, NULL
