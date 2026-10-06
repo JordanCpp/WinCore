@@ -144,6 +144,13 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     $<TARGET_FILE:WinCore>
     "${CMAKE_CURRENT_BINARY_DIR}/examples/GDI"
+    COMMENT "Copying WinCore library to examples directory..."
+)
+
+add_custom_command(
+    TARGET WinCore POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    $<TARGET_FILE:WinCore>
     "${CMAKE_CURRENT_BINARY_DIR}/examples/GL1"
     COMMENT "Copying WinCore library to examples directory..."
 )
