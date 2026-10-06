@@ -3,7 +3,8 @@
 #ifndef WinCore_SDL2_Window_hpp
 #define WinCore_SDL2_Window_hpp
 
-#include <SDL.h>
+#include <SDL_video.h>
+#include <SDL_render.h>
 #include <WinCore/BaseWindow.hpp>
 
 class Window
@@ -16,10 +17,24 @@ public:
 	void CreateContext();
 	BOOL MakeCurrent();
 	BOOL SwapBuffers();
+	BOOL BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight);
+	BOOL GetClientRect(LPRECT lpRect);
+	BOOL ShowWindow(int nCmdShow);
+	BOOL UpdateWindow();
+	BOOL GetWindowRect(LPRECT lpRect);
+	BOOL SetWindowTextA(LPCSTR lpString);
+
+	int  GetWidth()  const;
+	int  GetHeight() const;
+
+	void SetPaintValid(BOOL valid);
+	BOOL IsPaintValid() const;
 private:
 	SDL_Window*    _window;
+	SDL_Renderer*  _renderer;
 	SDL_GLContext  _glContext;
 	BaseWindow     _baseWindow;
+	BOOL           _paintValid;
 };
 
 #endif

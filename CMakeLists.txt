@@ -87,6 +87,10 @@ if (BACKEND_SDL2)
         "source/WinCore/Backends/SDL2/WinCore/Initializer.cpp"
         "source/WinCore/Backends/SDL2/WinCore/Shared.cpp"
         "source/WinCore/Backends/SDL2/WinCore/Window.cpp"
+        "source/WinCore/Backends/SDL2/WinCore/OpenGLFunc.cpp"
+        "source/WinCore/Backends/SDL2/WinCore/Ticks.cpp"
+        "source/WinCore/Backends/SDL2/WinCore/Cursor.cpp"
+        "source/WinCore/Backends/SDL2/WinCore/AsyncKey.cpp"
     )
 endif()
 
