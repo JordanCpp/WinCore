@@ -11,6 +11,7 @@ extern "C" {
 #include <WinCore/Types.h>
 
 WINCORE_API PROC wglGetProcAddress(LPCSTR unnamedParam1);
+WINCORE_API BOOL wglDeleteContext(HGLRC hglrc);
 
 #ifdef __cplusplus
 }

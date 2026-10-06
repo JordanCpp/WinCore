@@ -23,11 +23,18 @@ public:
 	BOOL UpdateWindow();
 	BOOL GetWindowRect(LPRECT lpRect);
 	BOOL SetWindowTextA(LPCSTR lpString);
+
+	int  GetWidth()  const;
+	int  GetHeight() const;
+
+	void SetPaintValid(BOOL valid);
+	BOOL IsPaintValid() const;
 private:
 	SDL_Window*    _window;
 	SDL_Renderer*  _renderer;
 	SDL_GLContext  _glContext;
 	BaseWindow     _baseWindow;
+	BOOL           _paintValid;
 };
 
 #endif

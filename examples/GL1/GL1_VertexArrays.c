@@ -12,7 +12,7 @@
 #include <string.h>
 #include <WinCore/Windows.h>
 
-float vertices[] = 
+float vertices[] =
 {
     -0.5f, -0.5f,  0.5f,
      0.5f, -0.5f,  0.5f,
@@ -24,7 +24,7 @@ float vertices[] =
     -0.5f,  0.5f, -0.5f
 };
 
-float colors[] = 
+float colors[] =
 {
     1.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
@@ -61,21 +61,34 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
 
         glViewport(0, 0, width, height);
+        return 0;
     }
-    break;
+
     case WM_KEYDOWN:
         if (wParam == 'X' || wParam == 'x')
         {
-            SaveScreenshotBMP("OpenGL 1.2 - Vertex Arrays.bmp", 800, 600);
+            RECT rc;
+            GetClientRect(hwnd, &rc);
+
+            int w = rc.right - rc.left;
+            int h = rc.bottom - rc.top;
+
+            if (w > 0 && h > 0)
+            {
+                SaveScreenshotBMP("OpenGL 1.2 - Vertex Arrays.bmp", w, h);
+            }
         }
-        break;
+        return 0;
+
     case WM_CLOSE:
         DestroyWindow(hwnd);
-        break;
+        return 0;
+
     case WM_DESTROY:
         PostQuitMessage(0);
-        break;
+        return 0;
     }
+
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
@@ -83,19 +96,51 @@ int main()
 {
     WNDCLASS wc;
     MSG      msg;
+    HWND     hwnd;
+    HDC      hDC;
+    HGLRC    hRC;
+    int      pixelFormat;
+    float    angle = 0.0f;
+    BOOL     running;
+
+    PIXELFORMATDESCRIPTOR pfd;
 
     memset(&wc, 0, sizeof(WNDCLASS));
     wc.lpszClassName = "WinCoreDemoClass";
     wc.lpfnWndProc = WndProc;
-    RegisterClass(&wc);
+    wc.hInstance = NULL;
 
-    HWND hwnd = CreateWindow(wc.lpszClassName, "OpenGL 1.2 - Vertex Arrays",
+    if (!RegisterClass(&wc))
+    {
+        fprintf(stderr, "RegisterClass failed\n");
+        return 1;
+    }
+
+    hwnd = CreateWindow(
+        wc.lpszClassName,
+        "OpenGL 1.2 - Vertex Arrays",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-        CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, wc.hInstance, NULL);
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        800, 600,
+        NULL, NULL, wc.hInstance, NULL);
 
-    HDC hDC = GetDC(hwnd);
+    if (!hwnd)
+    {
+        fprintf(stderr, "CreateWindow failed\n");
+        return 1;
+    }
 
-    PIXELFORMATDESCRIPTOR pfd;
+    ShowWindow(hwnd, SW_SHOW);
+    UpdateWindow(hwnd);
+
+    hDC = GetDC(hwnd);
+    if (!hDC)
+    {
+        fprintf(stderr, "GetDC failed\n");
+        DestroyWindow(hwnd);
+        return 1;
+    }
+
     memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
     pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
     pfd.nVersion = 1;
@@ -105,14 +150,27 @@ int main()
     pfd.cDepthBits = 24;
     pfd.cStencilBits = 8;
 
-    int pixelFormat = ChoosePixelFormat(hDC, &pfd);
+    pixelFormat = ChoosePixelFormat(hDC, &pfd);
     SetPixelFormat(hDC, pixelFormat, &pfd);
 
-    HGLRC hRC = wglCreateContext(hDC);
+    hRC = wglCreateContext(hDC);
+    if (!hRC)
+    {
+        fprintf(stderr, "wglCreateContext failed\n");
+        ReleaseDC(hwnd, hDC);
+        DestroyWindow(hwnd);
+        return 1;
+    }
+
     wglMakeCurrent(hDC, hRC);
 
     OpenGL_Compatibility_Init(1, 2);
-    glViewport(0, 0, 800, 600);
+
+    {
+        RECT rc;
+        GetClientRect(hwnd, &rc);
+        glViewport(0, 0, rc.right - rc.left, rc.bottom - rc.top);
+    }
 
     glEnable(GL_DEPTH_TEST);
 
@@ -123,27 +181,43 @@ int main()
     glColorPointer(3, GL_FLOAT, 0, colors);
 
     msg.message = WM_NULL;
-    float angle = 0.0f;
+    running = TRUE;
 
-    while (msg.message != WM_QUIT)
+    while (running)
     {
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-            if (msg.message == WM_QUIT) break;
+            if (msg.message == WM_QUIT)
+            {
+                running = FALSE;
+                break;
+            }
+
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
 
-        if (msg.message == WM_QUIT) break;
+        if (!running)
+        {
+            break;
+        }
 
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        float fov = 0.5f;
-        float aspect = 800.0f / 600.0f;
-        glFrustum(-fov * aspect, fov * aspect, -fov, fov, 1.0f, 100.0f);
+        {
+            RECT rc;
+            GetClientRect(hwnd, &rc);
+
+            int   w = rc.right - rc.left;
+            int   h = rc.bottom - rc.top;
+            float aspect = (h > 0) ? ((float)w / (float)h) : 1.0f;
+            float fov = 0.5f;
+
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glFrustum(-fov * aspect, fov * aspect, -fov, fov, 1.0f, 100.0f);
+        }
 
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
@@ -161,6 +235,10 @@ int main()
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
+
+    wglMakeCurrent(NULL, NULL);
+    wglDeleteContext(hRC);
+    ReleaseDC(hwnd, hDC);
 
     return 0;
 }

@@ -128,3 +128,78 @@ int ReleaseDC(HWND hWnd, HDC hDC)
 
 	return 1;
 }
+
+HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint)
+{
+	if (!hWnd || !lpPaint)
+	{
+		return NULL;
+	}
+
+	Window* window = MainApplication()._windowManager.Find(hWnd);
+	if (!window)
+	{
+		return NULL;
+	}
+
+	HDC hdc = GetDC(hWnd);
+
+	lpPaint->hdc = hdc;
+	lpPaint->fErase = FALSE;
+	lpPaint->fRestore = FALSE;
+	lpPaint->fIncUpdate = FALSE;
+
+	RECT rc;
+	rc.left = 0;
+	rc.top = 0;
+	rc.right = window->GetWidth();
+	rc.bottom = window->GetHeight();
+
+	lpPaint->rcPaint = rc;
+	memset(lpPaint->rgbReserved, 0, sizeof(lpPaint->rgbReserved));
+
+	window->SetPaintValid(TRUE);
+
+	return hdc;
+}
+
+BOOL EndPaint(HWND hWnd, const PAINTSTRUCT* lpPaint)
+{
+	if (!hWnd || !lpPaint)
+	{
+		return FALSE;
+	}
+
+	(void)hWnd;
+	(void)lpPaint;
+
+	return TRUE;
+}
+
+BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase)
+{
+	if (!hWnd)
+	{
+		return FALSE;
+	}
+
+	Window* window = MainApplication()._windowManager.Find(hWnd);
+	if (!window)
+	{
+		return FALSE;
+	}
+
+	(void)lpRect;
+	(void)bErase;
+
+	window->SetPaintValid(FALSE);
+
+	MSG msg;
+	memset(&msg, 0, sizeof(MSG));
+	msg.hwnd = hWnd;
+	msg.message = WM_PAINT;
+
+	MainApplication()._eventHandler.Messages().Push(msg);
+
+	return TRUE;
+}

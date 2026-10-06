@@ -42,7 +42,8 @@ static void StylesToProperties(SDL_PropertiesID props, DWORD dwStyle, DWORD dwEx
 Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) :
 	_window(NULL),
 	_renderer(NULL),
-	_glContext(NULL)
+	_glContext(NULL),
+	_paintValid(TRUE)
 {
 	_baseWindow.dwExStyle = dwExStyle;
 	_baseWindow.lpClassName = lpClassName ? lpClassName : "";
@@ -245,18 +246,13 @@ BOOL Window::GetClientRect(LPRECT lpRect)
 {
 	if (!lpRect || !_window)
 	{
-		return true;
+		return FALSE;
 	}
 
-	int w = 0;
-	int h = 0;
-
-	SDL_GetWindowSize(_window, &w, &h);
-
-	lpRect->left   = 0;
-	lpRect->top    = 0;
-	lpRect->right  = static_cast<LONG>(w);
-	lpRect->bottom = static_cast<LONG>(h);
+	lpRect->left = 0;
+	lpRect->top = 0;
+	lpRect->right = static_cast<LONG>(GetWidth());
+	lpRect->bottom = static_cast<LONG>(GetHeight());
 
 	return TRUE;
 }
@@ -325,4 +321,32 @@ BOOL Window::SetWindowTextA(LPCSTR lpString)
 	SDL_SetWindowTitle(_window, _baseWindow.lpWindowName.c_str());
 
 	return TRUE;
+}
+
+int Window::GetWidth() const
+{
+	if (!_window) return 0;
+	int w = 0, h = 0;
+	SDL_GetWindowSizeInPixels(_window, &w, &h);
+
+	return w;
+}
+
+int Window::GetHeight() const
+{
+	if (!_window) return 0;
+	int w = 0, h = 0;
+	SDL_GetWindowSizeInPixels(_window, &w, &h);
+
+	return h;
+}
+
+void Window::SetPaintValid(BOOL valid)
+{
+	_paintValid = valid;
+}
+
+BOOL Window::IsPaintValid() const
+{
+	return _paintValid;
 }

@@ -84,7 +84,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
     case WM_SIZE:
     {
-        int width  = (int)LOWORD(lParam);
+        int width = (int)LOWORD(lParam);
         int height = (int)HIWORD(lParam);
 
         if (height == 0)
@@ -93,12 +93,22 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
         }
 
         glViewport(0, 0, width, height);
+        return 0;
     }
-    break;
+
     case WM_KEYDOWN:
         if (wParam == 'X' || wParam == 'x')
         {
-            SaveScreenshotBMP("OpenGL 1.2 - Gouraud vs Flat.bmp", 800, 600);
+            RECT rc;
+            GetClientRect(hwnd, &rc);
+
+            int w = rc.right - rc.left;
+            int h = rc.bottom - rc.top;
+
+            if (w > 0 && h > 0)
+            {
+                SaveScreenshotBMP("OpenGL 1.2 - Gouraud vs Flat.bmp", w, h);
+            }
         }
 
         if (wParam == VK_SPACE)
@@ -113,14 +123,17 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
                 glShadeModel(GL_FLAT);
             }
         }
-        break;
+        return 0;
+
     case WM_CLOSE:
         DestroyWindow(hwnd);
-        break;
+        return 0;
+
     case WM_DESTROY:
         PostQuitMessage(0);
-        break;
+        return 0;
     }
+
     return DefWindowProc(hwnd, msg, wParam, lParam);
 }
 
@@ -133,6 +146,7 @@ int main()
     HGLRC    hRC;
     int      pixelFormat;
     float    angle = 0.0f;
+    BOOL     running;
 
     PIXELFORMATDESCRIPTOR pfd;
 
@@ -149,12 +163,38 @@ int main()
     memset(&wc, 0, sizeof(WNDCLASS));
     wc.lpszClassName = "WinCoreDemoClass";
     wc.lpfnWndProc = WndProc;
-    RegisterClass(&wc);
+    wc.hInstance = NULL;
 
-    hwnd = CreateWindow(wc.lpszClassName, "OpenGL 1.2 - Gouraud vs Flat (Press SPACE)", WS_OVERLAPPEDWINDOW | WS_VISIBLE, CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, wc.hInstance, NULL);
+    if (!RegisterClass(&wc))
+    {
+        fprintf(stderr, "RegisterClass failed\n");
+        return 1;
+    }
+
+    hwnd = CreateWindow(
+        wc.lpszClassName,
+        "OpenGL 1.2 - Gouraud vs Flat (Press SPACE)",
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        800, 600,
+        NULL, NULL, wc.hInstance, NULL);
+
+    if (!hwnd)
+    {
+        fprintf(stderr, "CreateWindow failed\n");
+        return 1;
+    }
+
     ShowWindow(hwnd, SW_SHOW);
+    UpdateWindow(hwnd);
 
     hDC = GetDC(hwnd);
+    if (!hDC)
+    {
+        fprintf(stderr, "GetDC failed\n");
+        DestroyWindow(hwnd);
+        return 1;
+    }
 
     memset(&pfd, 0, sizeof(PIXELFORMATDESCRIPTOR));
     pfd.nSize = sizeof(PIXELFORMATDESCRIPTOR);
@@ -168,10 +208,23 @@ int main()
     SetPixelFormat(hDC, pixelFormat, &pfd);
 
     hRC = wglCreateContext(hDC);
+    if (!hRC)
+    {
+        fprintf(stderr, "wglCreateContext failed\n");
+        ReleaseDC(hwnd, hDC);
+        DestroyWindow(hwnd);
+        return 1;
+    }
+
     wglMakeCurrent(hDC, hRC);
 
     OpenGL_Compatibility_Init(1, 2);
-    glViewport(0, 0, 800, 600);
+
+    {
+        RECT rc;
+        GetClientRect(hwnd, &rc);
+        glViewport(0, 0, rc.right - rc.left, rc.bottom - rc.top);
+    }
 
     GenerateSphere();
 
@@ -198,17 +251,26 @@ int main()
     glNormalPointer(GL_FLOAT, 0, sphere_normals);
 
     msg.message = WM_NULL;
+    running = TRUE;
 
-    while (msg.message != WM_QUIT)
+    while (running)
     {
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
-            if (msg.message == WM_QUIT) break;
+            if (msg.message == WM_QUIT)
+            {
+                running = FALSE;
+                break;
+            }
+
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
 
-        if (msg.message == WM_QUIT) break;
+        if (!running)
+        {
+            break;
+        }
 
         glClearColor(0.1f, 0.15f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -233,6 +295,10 @@ int main()
 
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
+
+    wglMakeCurrent(NULL, NULL);
+    wglDeleteContext(hRC);
+    ReleaseDC(hwnd, hDC);
 
     return 0;
 }

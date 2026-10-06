@@ -25,7 +25,6 @@ endfunction()
 set(WINCORE_EXAMPLES
     GL1_DynamicSpotlight
     GL1_GouraudVsFlat
-    GL1_MultitextureBlend
     GL1_Textured3DCube
     GL1_VertexArrays
 )

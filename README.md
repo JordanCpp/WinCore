@@ -74,6 +74,9 @@ WINCORE_API BOOL SetCursorPos(int x, int y);
 WINCORE_API int ShowCursor(BOOL bShow);
 WINCORE_API SHORT GetAsyncKeyState(int vKey);
 WINCORE_API BOOL SetWindowText(HWND hWnd, LPCSTR lpString);
+WINCORE_API HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
+WINCORE_API BOOL EndPaint(HWND hWnd, const PAINTSTRUCT* lpPaint);
+WINCORE_API BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase);
 ```
 
 #### 🎨 Gdi32.dll

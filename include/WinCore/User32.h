@@ -135,6 +135,16 @@ typedef struct tagRECT
     LONG bottom;
 } RECT, * PRECT, * LPRECT;
 
+typedef struct tagPAINTSTRUCT
+{
+    HDC  hdc;
+    BOOL fErase;
+    RECT rcPaint;
+    BOOL fRestore;
+    BOOL fIncUpdate;
+    BYTE rgbReserved[32];
+} PAINTSTRUCT, * PPAINTSTRUCT, * LPPAINTSTRUCT;
+
 #ifdef UNICODE
 #else
     typedef WNDCLASSA WNDCLASS;
@@ -179,6 +189,12 @@ WINCORE_API int ShowCursor(BOOL bShow);
 WINCORE_API SHORT GetAsyncKeyState(int vKey);
 
 WINCORE_API BOOL SetWindowTextA(HWND hWnd, LPCSTR lpString);
+
+WINCORE_API HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
+
+WINCORE_API BOOL EndPaint(HWND hWnd, const PAINTSTRUCT* lpPaint);
+
+WINCORE_API BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase);
 
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 

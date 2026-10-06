@@ -7,3 +7,10 @@ PROC wglGetProcAddress(LPCSTR unnamedParam1)
 {
 	return LoadGLFunction(unnamedParam1);
 }
+
+BOOL wglDeleteContext(HGLRC hglrc)
+{
+    (void)hglrc;
+
+    return TRUE;
+}
