@@ -155,7 +155,7 @@ int main()
     memset(&wc, 0, sizeof(WNDCLASS));
     wc.lpszClassName = "WinCoreDemoClass";
     wc.lpfnWndProc = WndProc;
-    wc.hInstance = NULL;
+    wc.hInstance = GetModuleHandle(NULL);
 
     if (!RegisterClass(&wc))
     {

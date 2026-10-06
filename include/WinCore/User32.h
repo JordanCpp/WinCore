@@ -200,6 +200,7 @@ WINCORE_API BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase);
 
 #ifdef UNICODE
 #else
+    #define GetModuleHandle  GetModuleHandleA
     #define RegisterClass    RegisterClassA
     #define CreateWindow     CreateWindowA 
     #define GetMessage       GetMessageA

@@ -147,7 +147,7 @@ int main(void)
     memset(&wc, 0, sizeof(WNDCLASS));
     wc.lpszClassName = "WinCoreGDIStretchClass";
     wc.lpfnWndProc = WndProc;
-    wc.hInstance = NULL;
+    wc.hInstance = GetModuleHandle(NULL);
 
     if (!RegisterClass(&wc))
     {
