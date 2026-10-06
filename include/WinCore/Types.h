@@ -51,6 +51,8 @@ typedef UINT_PTR        WPARAM;
 typedef LONG_PTR        LPARAM;
 typedef LONG_PTR        LRESULT;
 
+typedef short SHORT;
+
 typedef char  CHAR;
 typedef const CHAR* LPCSTR, * PCSTR;
 

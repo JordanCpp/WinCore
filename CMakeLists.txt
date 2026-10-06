@@ -99,6 +99,7 @@ if (BACKEND_SDL3)
         "source/WinCore/Backends/SDL3/WinCore/OpenGLFunc.cpp"
         "source/WinCore/Backends/SDL3/WinCore/Ticks.cpp"
         "source/WinCore/Backends/SDL3/WinCore/Cursor.cpp"
+        "source/WinCore/Backends/SDL3/WinCore/AsyncKey.cpp"
     )
 endif()
 

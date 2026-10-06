@@ -72,6 +72,7 @@ WINCORE_API BOOL GetWindowRect(HWND hWnd, LPRECT lpRect);
 WINCORE_API BOOL GetCursorPos(LPPOINT lpPoint);
 WINCORE_API BOOL SetCursorPos(int x, int y);
 WINCORE_API int ShowCursor(BOOL bShow);
+WINCORE_API SHORT GetAsyncKeyState(int vKey);
 ```
 
 #### 🎨 Gdi32.dll

@@ -108,3 +108,8 @@ int ShowCursor(BOOL bShow)
 {
 	return MainApplication()._cursor.ShowCursor(bShow);
 }
+
+SHORT GetAsyncKeyState(int vKey)
+{
+	return MainApplication()._asyncKey.GetAsyncKeyStateImpl(vKey);
+}

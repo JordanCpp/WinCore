@@ -11,6 +11,7 @@
 #include <WinCore/SharedCreator.hpp>
 #include <WinCore/Ticks.hpp>
 #include <WinCore/Cursor.hpp>
+#include <WinCore/AsyncKey.hpp>
 
 class Application
 {
@@ -50,6 +51,7 @@ public:
 	SharedCreator    _sharedCreator;
 	Ticks            _ticks;
 	Cursor           _cursor;
+	AsyncKey         _asyncKey;
 };
 
 Application& MainApplication();

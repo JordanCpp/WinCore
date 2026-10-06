@@ -176,6 +176,8 @@ WINCORE_API BOOL SetCursorPos(int x, int y);
 
 WINCORE_API int ShowCursor(BOOL bShow);
 
+WINCORE_API SHORT GetAsyncKeyState(int vKey);
+
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 
 #ifdef UNICODE
