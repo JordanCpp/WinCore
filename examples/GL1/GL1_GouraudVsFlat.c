@@ -84,10 +84,13 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
     case WM_SIZE:
     {
-        int width = (int)LOWORD(lParam);
+        int width  = (int)LOWORD(lParam);
         int height = (int)HIWORD(lParam);
 
-        if (height == 0) height = 1;
+        if (height == 0)
+        {
+            height = 1;
+        }
 
         glViewport(0, 0, width, height);
     }

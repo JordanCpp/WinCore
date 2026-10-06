@@ -38,6 +38,12 @@ void EventTranslator::Translate(const SDL_Event& sdlEvent, MSG& winMsg)
         winMsg.pt.y = static_cast<LONG>(sdlEvent.motion.y);
         break;
 
+    case SDL_EVENT_WINDOW_RESIZED:
+        winMsg.message = WM_SIZE;
+        winMsg.wParam = 0;
+        winMsg.lParam = (static_cast<LPARAM>(sdlEvent.window.data2) << 16) | (static_cast<LPARAM>(sdlEvent.window.data1) & 0xFFFF);
+        break;
+
     default:
         winMsg.message = WM_NULL;
         break;

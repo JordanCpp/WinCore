@@ -53,7 +53,7 @@ int main(void)
     hwnd = CreateWindow(
         wc.lpszClassName,
         "WinCore Demo - Pure C Software Rendering (SetDIBitsToDevice)",
-        0,
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
         SCREEN_WIDTH, SCREEN_HEIGHT,
         NULL, NULL, wc.hInstance, NULL

@@ -87,6 +87,19 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
     switch (msg)
     {
+    case WM_SIZE:
+    {
+        int width = (int)LOWORD(lParam);
+        int height = (int)HIWORD(lParam);
+
+        if (height == 0)
+        {
+            height = 1;
+        }
+
+        glViewport(0, 0, width, height);
+    }
+    break;
     case WM_KEYDOWN:
         if (wParam == 'X' || wParam == 'x')
         {
@@ -110,7 +123,7 @@ int main()
     RegisterClass(&wc);
 
     HWND hwnd = CreateWindow(wc.lpszClassName, "OpenGL 1.2 - Textured 3D Cube",
-        0,
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT, 800, 600, NULL, NULL, wc.hInstance, NULL);
 
     HDC hDC = GetDC(hwnd);
