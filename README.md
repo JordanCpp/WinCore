@@ -119,6 +119,7 @@ WINCORE_API HGLRC wglCreateContext(HDC hdc);
 WINCORE_API BOOL wglMakeCurrent(HDC hdc, HGLRC hglrc);
 WINCORE_API BOOL wglDeleteContext(HGLRC hglrc);
 WINCORE_API PROC wglGetProcAddress(LPCSTR unnamedParam1);
+WINCORE_API HGLRC wglCreateContextAttribsARB(HDC hdc, HGLRC hShareContext, const int* attribList);
 ```
 
 ---

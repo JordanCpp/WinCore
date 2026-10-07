@@ -2,6 +2,17 @@
 
 #include <WinCore/Window.hpp>
 
+#define WGL_CONTEXT_MAJOR_VERSION_ARB             0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB             0x2092
+#define WGL_CONTEXT_LAYER_PLANE_ARB               0x2093
+#define WGL_CONTEXT_FLAGS_ARB                     0x2094
+#define WGL_CONTEXT_PROFILE_MASK_ARB              0x9126
+
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB          0x00000001
+#define WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB 0x00000002
+#define WGL_CONTEXT_DEBUG_BIT_ARB                 0x00000001
+#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB    0x00000002
+
 static void StylesToProperties(SDL_PropertiesID props, DWORD dwStyle, DWORD dwExStyle)
 {
 	if (dwStyle & WS_POPUP)
@@ -348,4 +359,153 @@ void Window::SetPaintValid(BOOL valid)
 BOOL Window::IsPaintValid() const
 {
 	return _baseWindow.IsPaintValid();
+}
+
+int Window::ChoosePixelFormat(const PIXELFORMATDESCRIPTOR* ppfd)
+{
+	if (!ppfd)
+	{
+		return 0;
+	}
+
+	if (!(ppfd->dwFlags & PFD_SUPPORT_OPENGL))
+	{
+		return 0;
+	}
+
+	if (ppfd->dwFlags & PFD_DOUBLEBUFFER)
+	{
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	}
+	else
+	{
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+	}
+
+	if (ppfd->cColorBits >= 24)
+	{
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+		if (ppfd->cColorBits == 32)
+		{
+			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+		}
+		else
+		{
+			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+		}
+	}
+	else if (ppfd->cColorBits == 16)
+	{
+		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
+		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
+		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
+		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
+	}
+
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, ppfd->cDepthBits);
+
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, ppfd->cStencilBits);
+
+	return 1;
+}
+
+BOOL Window::SetPixelFormat(int format, const PIXELFORMATDESCRIPTOR* ppfd)
+{
+	if (format != 1)
+	{
+		return FALSE;
+	}
+
+	if (_glContext)
+	{
+		return FALSE;
+	}
+
+	if (ppfd)
+	{
+		if (!(ppfd->dwFlags & PFD_SUPPORT_OPENGL))
+		{
+			return FALSE;
+		}
+
+		if (ppfd->dwFlags & PFD_DOUBLEBUFFER)
+		{
+			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+		}
+		else
+		{
+			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+		}
+
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, ppfd->cDepthBits);
+		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, ppfd->cStencilBits);
+	}
+
+	return TRUE;
+}
+
+HGLRC Window::wglCreateContextAttribsARB(HGLRC hShareContext, const int* attribList)
+{
+	int major = 1;
+	int minor = 0;
+	int profileMask = 0;
+	int contextFlags = 0;
+
+	if (attribList)
+	{
+		for (int i = 0; attribList[i] != 0; i += 2)
+		{
+			switch (attribList[i])
+			{
+			case WGL_CONTEXT_MAJOR_VERSION_ARB:
+				major = attribList[i + 1];
+				break;
+			case WGL_CONTEXT_MINOR_VERSION_ARB:
+				minor = attribList[i + 1];
+				break;
+			case WGL_CONTEXT_PROFILE_MASK_ARB:
+				profileMask = attribList[i + 1];
+				break;
+			case WGL_CONTEXT_FLAGS_ARB:
+				contextFlags = attribList[i + 1];
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
+
+	if (profileMask & WGL_CONTEXT_CORE_PROFILE_BIT_ARB)
+	{
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	}
+	else if (profileMask & WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB)
+	{
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	}
+	else
+	{
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, 0);
+	}
+
+	int sdlContextFlags = 0;
+	if (contextFlags & WGL_CONTEXT_DEBUG_BIT_ARB)
+	{
+		sdlContextFlags |= SDL_GL_CONTEXT_DEBUG_FLAG;
+	}
+	if (contextFlags & WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB)
+	{
+		sdlContextFlags |= SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG;
+	}
+
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, sdlContextFlags);
+
+	CreateContext();
+
+	return (HGLRC)this;
 }

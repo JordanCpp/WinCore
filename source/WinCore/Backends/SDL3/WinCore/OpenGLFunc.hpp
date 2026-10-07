@@ -3,6 +3,13 @@
 #ifndef WinCore_SDL3_OpenGLFunc_hpp
 #define WinCore_SDL3_OpenGLFunc_hpp
 
-void* LoadGLFunction(const char* name);
+class OpenGLFuncs
+{
+public:
+	void* GetFunction(const char* name);
+private:
+};
+
+
 
 #endif

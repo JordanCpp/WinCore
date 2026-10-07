@@ -12,6 +12,7 @@
 #include <WinCore/Ticks.hpp>
 #include <WinCore/Cursor.hpp>
 #include <WinCore/AsyncKey.hpp>
+#include <WinCore/OpenGLFunc.hpp>
 
 class Application
 {
@@ -27,6 +28,7 @@ public:
 	Ticks            _ticks;
 	Cursor           _cursor;
 	AsyncKey         _asyncKey;
+	OpenGLFuncs      _openGLFuncs;
 };
 
 Application& MainApplication();

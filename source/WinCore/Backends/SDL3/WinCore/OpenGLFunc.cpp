@@ -3,7 +3,7 @@
 #include <SDL3/SDL_video.h>
 #include <WinCore/OpenGLFunc.hpp>
 
-void* LoadGLFunction(const char* name)
+void* OpenGLFuncs::GetFunction(const char* name)
 {
 	return (void*)SDL_GL_GetProcAddress(name);
 }

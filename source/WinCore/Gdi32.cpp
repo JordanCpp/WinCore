@@ -14,7 +14,14 @@ int ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd)
 		return 0;
 	}
 
-	return 1;
+	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
+
+	if (window)
+	{
+		return 0;
+	}
+
+	return window->ChoosePixelFormat(ppfd);
 }
 
 BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd)
@@ -25,7 +32,7 @@ BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd)
 
 	if (window)
 	{
-		return TRUE;
+		return window->SetPixelFormat(format, ppfd);
 	}
 
 	return FALSE;

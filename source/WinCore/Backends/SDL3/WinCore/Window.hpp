@@ -29,6 +29,11 @@ public:
 
 	void SetPaintValid(BOOL valid);
 	BOOL IsPaintValid() const;
+
+	int ChoosePixelFormat(const PIXELFORMATDESCRIPTOR* ppfd);
+	BOOL SetPixelFormat(int format, const PIXELFORMATDESCRIPTOR* ppfd);
+
+	HGLRC wglCreateContextAttribsARB(HGLRC hShareContext, const int* attribList);
 private:
 	SDL_Window*    _window;
 	SDL_Renderer*  _renderer;
