@@ -53,8 +53,7 @@ static Uint32 StylesToFlags(DWORD dwStyle, DWORD dwExStyle, bool forceOpenGL = f
 Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) :
     _window(NULL),
     _renderer(NULL),
-    _glContext(NULL),
-    _paintValid(TRUE)
+    _glContext(NULL)
 {
     _baseWindow.dwExStyle = dwExStyle;
     _baseWindow.lpClassName = lpClassName ? lpClassName : "";
@@ -330,10 +329,10 @@ int Window::GetHeight() const
 
 void Window::SetPaintValid(BOOL valid)
 {
-    _paintValid = valid;
+    _baseWindow.SetPaintValid(valid);
 }
 
 BOOL Window::IsPaintValid() const
 {
-    return _paintValid;
+    return _baseWindow.IsPaintValid();
 }

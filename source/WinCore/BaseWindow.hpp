@@ -9,6 +9,10 @@
 class BaseWindow
 {
 public:
+    BaseWindow();
+    void SetPaintValid(BOOL valid);
+    BOOL IsPaintValid() const;
+
     DWORD        dwExStyle;
     std::string  lpClassName;
     std::string  lpWindowName;
@@ -21,6 +25,8 @@ public:
     HMENU        hMenu;
     HINSTANCE    hInstance;
     LPVOID       lpParam;
+
+    BOOL         _paintValid;
 };
 
 #endif

@@ -34,7 +34,6 @@ private:
 	SDL_Renderer*  _renderer;
 	SDL_GLContext  _glContext;
 	BaseWindow     _baseWindow;
-	BOOL           _paintValid;
 };
 
 #endif
