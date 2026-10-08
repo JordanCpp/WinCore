@@ -151,6 +151,7 @@ HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint)
 
 	HDC hdc = GetDC(hWnd);
 
+	memset(lpPaint, 0, sizeof(PAINTSTRUCT));
 	lpPaint->hdc = hdc;
 	lpPaint->fErase = FALSE;
 	lpPaint->fRestore = FALSE;
@@ -163,9 +164,6 @@ HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint)
 	rc.bottom = window->GetHeight();
 
 	lpPaint->rcPaint = rc;
-
-	memset(lpPaint, 0, sizeof(PAINTSTRUCT));
-	memset(lpPaint->rgbReserved, 0, sizeof(lpPaint->rgbReserved));
 
 	window->SetPaintValid(TRUE);
 
@@ -200,6 +198,11 @@ BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase)
 
 	(void)lpRect;
 	(void)bErase;
+
+	if (!window->IsPaintValid())
+	{
+		return TRUE;
+	}
 
 	window->SetPaintValid(FALSE);
 
