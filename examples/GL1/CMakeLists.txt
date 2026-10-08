@@ -10,7 +10,11 @@ function(add_wincore_example EXAMPLE_NAME)
         C_EXTENSIONS OFF)
     
     target_link_libraries(${EXAMPLE_NAME} PRIVATE WinCore)
-  
+ 
+    if (UNIX)
+        target_link_libraries(${EXAMPLE_NAME} PRIVATE m)
+    endif()
+
     if (WIN32)
         target_link_options(${EXAMPLE_NAME} PRIVATE "-Wl,--allow-multiple-definition")
     endif()
