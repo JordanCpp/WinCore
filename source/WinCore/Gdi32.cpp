@@ -16,7 +16,7 @@ int ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd)
 
 	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
 
-	if (window)
+	if (!window)
 	{
 		return 0;
 	}
@@ -30,7 +30,7 @@ BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd)
 
 	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
 
-	if (window)
+	if (!window)
 	{
 		return window->SetPixelFormat(format, ppfd);
 	}
@@ -163,6 +163,8 @@ HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint)
 	rc.bottom = window->GetHeight();
 
 	lpPaint->rcPaint = rc;
+
+	memset(lpPaint, 0, sizeof(PAINTSTRUCT));
 	memset(lpPaint->rgbReserved, 0, sizeof(lpPaint->rgbReserved));
 
 	window->SetPaintValid(TRUE);
