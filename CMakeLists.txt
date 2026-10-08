@@ -69,65 +69,25 @@ include_directories("include")
 include_directories("source")
 include_directories("dependencies")
 
-file(GLOB WINCORE_SOURCES 
-    "source/WinCore/Application.cpp"
-    "source/WinCore/BaseWindow.cpp"
-    "source/WinCore/ClassRegistrator.cpp"
-    "source/WinCore/WindowManager.cpp"
-    "source/WinCore/WindowClassA.cpp"
-    "source/WinCore/WindowCreator.cpp"
-    "source/WinCore/SharedCreator.cpp"
-    "source/WinCore/User32.cpp"
-    "source/WinCore/Gdi32.cpp"
-    "source/WinCore/Kernel32.cpp"
-    "source/WinCore/OpenGL32.cpp"
-    "source/WinCore/MessageQueue.cpp"
-)
+file(GLOB WINCORE_SOURCES "source/WinCore/*.cpp")
 
 if (BACKEND_SDL2)
-    file(GLOB BACKEND_SOURCES 
-        "source/WinCore/Backends/SDL2/WinCore/EventHandler.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/EventTranslator.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/Initializer.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/Shared.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/Window.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/OpenGLFunc.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/Ticks.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/Cursor.cpp"
-        "source/WinCore/Backends/SDL2/WinCore/AsyncKey.cpp"
-    )
+    file(GLOB BACKEND_SOURCES "source/WinCore/Backends/SDL2/WinCore/*.cpp")
 endif()
 
 if (BACKEND_SDL3)
-    file(GLOB BACKEND_SOURCES 
-        "source/WinCore/Backends/SDL3/WinCore/EventHandler.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/EventTranslator.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/Initializer.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/Window.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/Shared.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/OpenGLFunc.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/Ticks.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/Cursor.cpp"
-        "source/WinCore/Backends/SDL3/WinCore/AsyncKey.cpp"
-    )
+    file(GLOB BACKEND_SOURCES "source/WinCore/Backends/SDL3/WinCore/*.cpp")
 endif()
 
 if (BACKEND_NULL)
-    file(GLOB BACKEND_SOURCES 
-        "source/WinCore/Backends/Null/WinCore/EventHandler.cpp"
-        "source/WinCore/Backends/Null/WinCore/Initializer.cpp"
-        "source/WinCore/Backends/Null/WinCore/Window.cpp"
-    )
+    file(GLOB BACKEND_SOURCES "source/WinCore/Backends/Null/WinCore/*.cpp")
 endif()
 
 add_library(WinCore SHARED ${WINCORE_SOURCES} ${BACKEND_SOURCES})
 
 target_compile_definitions(WinCore PRIVATE WINCORE_BUILD_DLL)
 
-set_target_properties(WinCore PROPERTIES
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN ON
-)
+set_target_properties(WinCore PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN ON)
 
 if (BACKEND_SDL2)
     target_link_libraries(WinCore PRIVATE ${SDL2_LIBRARIES})
