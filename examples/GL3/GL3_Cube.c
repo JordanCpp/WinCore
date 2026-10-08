@@ -123,10 +123,7 @@ int main()
     wc.lpszClassName = "WinCoreGL3Demo";
     wc.lpfnWndProc = WndProc;
     wc.hInstance = GetModuleHandle(NULL);
-
-    /*
     wc.style = CS_OWNDC;
-    */
 
     if (!RegisterClass(&wc)) return 1;
 
