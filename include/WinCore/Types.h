@@ -9,11 +9,15 @@
 #define NEAR
 #define CALLBACK
 
+/*
 #if defined(_WIN32) || defined(__i386__)
     #define WINAPI __stdcall
 #else
     #define WINAPI
 #endif
+*/
+
+#define WINAPI
 
 typedef void* PROC;
 
