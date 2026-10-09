@@ -25,10 +25,10 @@ PROC wglGetProcAddress(LPCSTR unnamedParam1)
 
     if (strcmp(unnamedParam1, "wglCreateContextAttribsARB") == 0)
     {
-        return reinterpret_cast<void*>(wglCreateContextAttribsARB);
+        return reinterpret_cast<PROC>(wglCreateContextAttribsARB);
     }
 
-    return MainApplication()._openGLFuncs.GetFunction(unnamedParam1);
+    return (PROC)MainApplication()._openGLFuncs.GetFunction(unnamedParam1);
 }
 
 BOOL wglDeleteContext(HGLRC hglrc)
