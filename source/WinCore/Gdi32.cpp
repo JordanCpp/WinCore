@@ -30,7 +30,7 @@ BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd)
 
 	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
 
-	if (!window)
+	if (window)
 	{
 		return window->SetPixelFormat(format, ppfd);
 	}
