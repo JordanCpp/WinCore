@@ -10,7 +10,7 @@ class ClassRegistrator
 {
 public:
 	typedef std::map<std::string, WindowClassA> container;
-	void Append(const WNDCLASSA* wndClass);
+	ATOM Append(const WNDCLASSA* wndClass);
 	bool Find(std::string name, WindowClassA& window);
 	const container& GetClasses();
 private:

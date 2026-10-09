@@ -2,26 +2,35 @@
 
 #include <WinCore/ClassRegistrator.hpp>
 
-void ClassRegistrator::Append(const WNDCLASSA* wndClass)
+ATOM ClassRegistrator::Append(const WNDCLASSA* wndClass)
 {
-	container::iterator i = _classes.find(wndClass->lpszClassName);
+    if (!wndClass || !wndClass->lpszClassName)
+    {
+        return 0;
+    }
 
-	if (i == _classes.end())
-	{
-		WindowClassA window;
+    container::iterator i = _classes.find(wndClass->lpszClassName);
 
-		window.cbClsExtra    = wndClass->cbClsExtra;
-		window.cbWndExtra    = wndClass->cbWndExtra;
-		window.hbrBackground = wndClass->hbrBackground;
-		window.hCursor       = wndClass->hCursor;
-		window.hIcon         = wndClass->hIcon;
-		window.hInstance     = wndClass->hInstance;
-		window.lpfnWndProc   = wndClass->lpfnWndProc;
-		window.lpszClassName = wndClass->lpszClassName ? wndClass->lpszClassName : "";
-		window.lpszMenuName  = wndClass->lpszMenuName  ? wndClass->lpszMenuName  : "";
+    if (i != _classes.end())
+    {
+        return 0;
+    }
 
-		_classes.insert(std::make_pair(wndClass->lpszClassName, window));
-	}
+    WindowClassA window;
+
+    window.cbClsExtra = wndClass->cbClsExtra;
+    window.cbWndExtra = wndClass->cbWndExtra;
+    window.hbrBackground = wndClass->hbrBackground;
+    window.hCursor = wndClass->hCursor;
+    window.hIcon = wndClass->hIcon;
+    window.hInstance = wndClass->hInstance;
+    window.lpfnWndProc = wndClass->lpfnWndProc;
+    window.lpszClassName = wndClass->lpszClassName;
+    window.lpszMenuName = wndClass->lpszMenuName ? wndClass->lpszMenuName : "";
+
+    _classes.insert(std::make_pair(std::string(wndClass->lpszClassName), window));
+
+    return static_cast<ATOM>(_classes.size());
 }
 
 bool ClassRegistrator::Find(std::string name, WindowClassA& window)
