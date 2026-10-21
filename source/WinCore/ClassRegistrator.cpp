@@ -2,9 +2,14 @@
 
 #include <WinCore/ClassRegistrator.hpp>
 
+ClassRegistrator::ClassRegistrator() :
+    _nextAtom(0xC000)
+{
+}
+
 ATOM ClassRegistrator::Append(const WNDCLASSA* wndClass)
 {
-    if (!wndClass || !wndClass->lpszClassName)
+    if (!wndClass || !wndClass->lpszClassName || !wndClass->lpfnWndProc)
     {
         return 0;
     }
@@ -17,7 +22,7 @@ ATOM ClassRegistrator::Append(const WNDCLASSA* wndClass)
     }
 
     WindowClassA window;
-
+    window.style = wndClass->style;
     window.cbClsExtra = wndClass->cbClsExtra;
     window.cbWndExtra = wndClass->cbWndExtra;
     window.hbrBackground = wndClass->hbrBackground;
@@ -30,7 +35,7 @@ ATOM ClassRegistrator::Append(const WNDCLASSA* wndClass)
 
     _classes.insert(std::make_pair(std::string(wndClass->lpszClassName), window));
 
-    return static_cast<ATOM>(_classes.size());
+    return _nextAtom++;
 }
 
 bool ClassRegistrator::Find(std::string name, WindowClassA& window)
