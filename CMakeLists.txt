@@ -87,8 +87,6 @@ add_library(WinCore SHARED ${WINCORE_SOURCES} ${BACKEND_SOURCES})
 
 target_compile_definitions(WinCore PRIVATE WINCORE_BUILD_DLL)
 
-set_target_properties(WinCore PROPERTIES CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN ON)
-
 if (BACKEND_SDL2)
     target_link_libraries(WinCore PRIVATE ${SDL2_LIBRARIES})
 endif()

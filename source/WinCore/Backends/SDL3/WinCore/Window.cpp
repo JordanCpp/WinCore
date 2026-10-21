@@ -173,12 +173,12 @@ BOOL Window::MakeCurrent()
 		CreateContext();
 	}
 
-	if (SDL_GL_MakeCurrent(_window, _glContext) == 0)
+	if (!_window || !_glContext)
 	{
-		return TRUE;
+		return FALSE;
 	}
 
-	return FALSE;
+	return SDL_GL_MakeCurrent(_window, _glContext) ? TRUE : FALSE;
 }
 
 BOOL Window::SwapBuffers()
