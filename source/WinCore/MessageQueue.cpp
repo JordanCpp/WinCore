@@ -9,12 +9,13 @@ MessageQueue::MessageQueue() :
 
 void MessageQueue::Push(const MSG& msg)
 {
-    _queue.push_back(msg);
-
     if (msg.message == WM_QUIT)
     {
-        _quit = true;
+        PostQuit(msg.wParam);
+        return;
     }
+
+    _queue.push_back(msg);
 }
 
 bool MessageQueue::Peek(MSG& msg, bool bRemove)
@@ -38,11 +39,23 @@ bool MessageQueue::PeekFiltered(MSG& msg, bool bRemove, HWND hWnd, UINT wMin, UI
 {
     for (std::deque<MSG>::iterator it = _queue.begin(); it != _queue.end(); ++it)
     {
+        if (it->message == WM_QUIT)
+        {
+            msg = *it;
+
+            if (bRemove)
+            {
+                _queue.erase(it);
+            }
+            
+            return true;
+        }
+
         if (hWnd != NULL && it->hwnd != hWnd)
         {
             continue;
         }
-
+        
         if (it->message < wMin || it->message > wMax)
         {
             continue;
@@ -54,7 +67,7 @@ bool MessageQueue::PeekFiltered(MSG& msg, bool bRemove, HWND hWnd, UINT wMin, UI
         {
             _queue.erase(it);
         }
-
+        
         return true;
     }
 
