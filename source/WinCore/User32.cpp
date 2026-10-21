@@ -4,9 +4,17 @@
 
 ATOM RegisterClassA(const WNDCLASSA* lpWndClass)
 {
-	if (!lpWndClass)
+	if (!lpWndClass || !lpWndClass->lpszClassName || !lpWndClass->lpfnWndProc)
 	{
 		MainApplication().SetLastError(ERROR_INVALID_PARAMETER);
+		return 0;
+	}
+
+	WindowClassA existing;
+
+	if (MainApplication()._classRegistrator.Find(lpWndClass->lpszClassName, existing))
+	{
+		MainApplication().SetLastError(ERROR_CLASS_ALREADY_EXISTS);
 		return 0;
 	}
 
@@ -14,13 +22,11 @@ ATOM RegisterClassA(const WNDCLASSA* lpWndClass)
 
 	if (atom == 0)
 	{
-		MainApplication().SetLastError(ERROR_CLASS_ALREADY_EXISTS);
-	}
-	else
-	{
-		MainApplication().SetLastError(ERROR_SUCCESS);
+		MainApplication().SetLastError(ERROR_NOT_ENOUGH_MEMORY);
+		return 0;
 	}
 
+	MainApplication().SetLastError(ERROR_SUCCESS);
 	return atom;
 }
 

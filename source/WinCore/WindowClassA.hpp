@@ -9,6 +9,8 @@
 class WindowClassA
 {
 public:
+    WindowClassA();
+
     UINT        style;
     WNDPROC     lpfnWndProc;
     int         cbClsExtra;
@@ -19,6 +21,7 @@ public:
     HBRUSH      hbrBackground;
     std::string lpszMenuName;
     std::string lpszClassName;
+    ATOM        atom;
 };
 
 #endif

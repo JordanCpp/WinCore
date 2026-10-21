@@ -9,14 +9,17 @@
 class ClassRegistrator
 {
 public:
-	typedef std::map<std::string, WindowClassA> container;
-	ClassRegistrator();
-	ATOM Append(const WNDCLASSA* wndClass);
-	bool Find(const std::string& name, WindowClassA& window);
-	const container& GetClasses();
+    typedef std::map<std::string, WindowClassA> container;
+    ClassRegistrator();
+    ATOM Append(const WNDCLASSA* wndClass);
+    bool Find(const std::string& name, WindowClassA& window) const;
+    const container& GetClasses() const;
 private:
-	container _classes;
-	ATOM      _nextAtom;
+    ClassRegistrator(const ClassRegistrator&);
+    ClassRegistrator& operator=(const ClassRegistrator&);
+    ATOM AllocateAtom() const;
+    container _classes;
+    ATOM      _nextAtom;
 };
 
 #endif

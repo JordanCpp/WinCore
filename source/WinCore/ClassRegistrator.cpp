@@ -2,9 +2,47 @@
 
 #include <WinCore/ClassRegistrator.hpp>
 
+static const ATOM kAtomMin = 0xC000;
+static const ATOM kAtomMax = 0xFFFF;
+
 ClassRegistrator::ClassRegistrator() :
-    _nextAtom(0xC000)
+    _nextAtom(kAtomMin)
 {
+}
+
+ATOM ClassRegistrator::AllocateAtom() const
+{
+    ATOM candidate = _nextAtom;
+
+    for (unsigned int i = 0; i <= (unsigned int)(kAtomMax - kAtomMin); ++i)
+    {
+        bool taken = false;
+
+        for (container::const_iterator it = _classes.begin(); it != _classes.end(); ++it)
+        {
+            if (it->second.atom == candidate)
+            {
+                taken = true;
+                break;
+            }
+        }
+
+        if (!taken)
+        {
+            return candidate;
+        }
+
+        if (candidate == kAtomMax)
+        {
+            candidate = kAtomMin;
+        }
+        else
+        {
+            ++candidate;
+        }
+    }
+
+    return 0;
 }
 
 ATOM ClassRegistrator::Append(const WNDCLASSA* wndClass)
@@ -14,9 +52,16 @@ ATOM ClassRegistrator::Append(const WNDCLASSA* wndClass)
         return 0;
     }
 
-    container::iterator i = _classes.find(wndClass->lpszClassName);
+    const std::string name(wndClass->lpszClassName);
 
-    if (i != _classes.end())
+    if (_classes.find(name) != _classes.end())
+    {
+        return 0;
+    }
+
+    ATOM atom = AllocateAtom();
+
+    if (atom == 0)
     {
         return 0;
     }
@@ -30,29 +75,31 @@ ATOM ClassRegistrator::Append(const WNDCLASSA* wndClass)
     window.hIcon = wndClass->hIcon;
     window.hInstance = wndClass->hInstance;
     window.lpfnWndProc = wndClass->lpfnWndProc;
-    window.lpszClassName = wndClass->lpszClassName;
+    window.lpszClassName = name;
     window.lpszMenuName = wndClass->lpszMenuName ? wndClass->lpszMenuName : "";
+    window.atom = atom;
 
-    _classes.insert(std::make_pair(std::string(wndClass->lpszClassName), window));
+    _classes.insert(std::make_pair(name, window));
 
-    return _nextAtom++;
+    _nextAtom = (atom == kAtomMax) ? kAtomMin : (ATOM)(atom + 1);
+
+    return atom;
 }
 
-bool ClassRegistrator::Find(const std::string& name, WindowClassA& window)
+bool ClassRegistrator::Find(const std::string& name, WindowClassA& window) const
 {
-	container::iterator i = _classes.find(name);
+    container::const_iterator i = _classes.find(name);
 
-	if (i != _classes.end())
-	{
-		window = i->second;
+    if (i != _classes.end())
+    {
+        window = i->second;
+        return true;
+    }
 
-		return true;
-	}
-
-	return false;
+    return false;
 }
 
-const ClassRegistrator::container& ClassRegistrator::GetClasses()
+const ClassRegistrator::container& ClassRegistrator::GetClasses() const
 {
-	return _classes;
+    return _classes;
 }
