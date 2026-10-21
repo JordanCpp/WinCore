@@ -38,7 +38,7 @@ ATOM ClassRegistrator::Append(const WNDCLASSA* wndClass)
     return _nextAtom++;
 }
 
-bool ClassRegistrator::Find(std::string name, WindowClassA& window)
+bool ClassRegistrator::Find(const std::string& name, WindowClassA& window)
 {
 	container::iterator i = _classes.find(name);
 
