@@ -12,17 +12,25 @@ public:
     MessageQueue();
 
     void Push(const MSG& msg);
+
     bool Peek(MSG& msg, bool bRemove);
-    bool PeekFiltered(MSG& msg, bool bRemove, HWND hWnd, UINT wMin, UINT wMax);
     bool Pop(MSG& msg);
-    void Quit();
-    bool IsRunning() const;
-    bool Empty() const;
-    size_t Size() const;
+    bool PeekFiltered(MSG& msg, bool bRemove, HWND hWnd, UINT wMin, UINT wMax);
+
     void PostQuit(WPARAM exitCode);
+
+    bool IsRunning() const;
+
+    bool   Empty() const;
+    size_t Size()  const;
+
 private:
+    MessageQueue(const MessageQueue&);
+    MessageQueue& operator=(const MessageQueue&);
+
+    bool HasQuit() const;
+
     std::deque<MSG> _queue;
-    bool            _quit;
 };
 
 #endif

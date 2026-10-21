@@ -2,8 +2,7 @@
 
 #include <WinCore/MessageQueue.hpp>
 
-MessageQueue::MessageQueue() :
-    _quit(false)
+MessageQueue::MessageQueue()
 {
 }
 
@@ -35,10 +34,17 @@ bool MessageQueue::Peek(MSG& msg, bool bRemove)
     return true;
 }
 
+bool MessageQueue::Pop(MSG& msg)
+{
+    return Peek(msg, true);
+}
+
 bool MessageQueue::PeekFiltered(MSG& msg, bool bRemove, HWND hWnd, UINT wMin, UINT wMax)
 {
     for (std::deque<MSG>::iterator it = _queue.begin(); it != _queue.end(); ++it)
     {
+        // WM_QUIT — thread-level сообщение, возвращается всегда
+        // независимо от фильтра (Win32-семантика).
         if (it->message == WM_QUIT)
         {
             msg = *it;
@@ -47,7 +53,7 @@ bool MessageQueue::PeekFiltered(MSG& msg, bool bRemove, HWND hWnd, UINT wMin, UI
             {
                 _queue.erase(it);
             }
-            
+
             return true;
         }
 
@@ -55,7 +61,7 @@ bool MessageQueue::PeekFiltered(MSG& msg, bool bRemove, HWND hWnd, UINT wMin, UI
         {
             continue;
         }
-        
+
         if (it->message < wMin || it->message > wMax)
         {
             continue;
@@ -67,26 +73,35 @@ bool MessageQueue::PeekFiltered(MSG& msg, bool bRemove, HWND hWnd, UINT wMin, UI
         {
             _queue.erase(it);
         }
-        
+
         return true;
     }
 
     return false;
 }
 
-bool MessageQueue::Pop(MSG& msg)
+void MessageQueue::PostQuit(WPARAM exitCode)
 {
-    return Peek(msg, true);
-}
+    if (HasQuit())
+    {
+        return; // WM_QUIT уже в очереди — идемпотентно
+    }
 
-void MessageQueue::Quit()
-{
-    _quit = true;
+    MSG quitMsg;
+    quitMsg.hwnd = NULL;
+    quitMsg.message = WM_QUIT;
+    quitMsg.wParam = exitCode;
+    quitMsg.lParam = 0;
+    quitMsg.time = 0;
+    quitMsg.pt.x = 0;
+    quitMsg.pt.y = 0;
+
+    _queue.push_back(quitMsg);
 }
 
 bool MessageQueue::IsRunning() const
 {
-    return !_quit;
+    return !HasQuit();
 }
 
 bool MessageQueue::Empty() const
@@ -99,17 +114,15 @@ size_t MessageQueue::Size() const
     return _queue.size();
 }
 
-void MessageQueue::PostQuit(WPARAM exitCode)
+bool MessageQueue::HasQuit() const
 {
-    if (_quit)
+    for (std::deque<MSG>::const_iterator it = _queue.begin(); it != _queue.end(); ++it)
     {
-        return;
+        if (it->message == WM_QUIT)
+        {
+            return true;
+        }
     }
 
-    MSG quitMsg = { 0 };
-    quitMsg.message = WM_QUIT;
-    quitMsg.wParam = exitCode;
-
-    _queue.push_back(quitMsg);
-    _quit = true;
+    return false;
 }

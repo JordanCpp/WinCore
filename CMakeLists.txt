@@ -6,6 +6,8 @@ option(BACKEND_SDL2 "Build with SDL2 backend" OFF)
 option(BACKEND_SDL3 "Build with SDL3 backend" ON)
 option(BACKEND_NULL "Build with Null backend" OFF)
 
+option(WINCORE_BUILD_TESTS "Build WinCore tests" OFF)
+
 if (BACKEND_SDL2)
     if (WIN32)
         set(SDL2_INCLUDE_DIRS "dependencies/SDL2-2.30.3/include")
@@ -135,3 +137,40 @@ add_custom_command(
 )
 
 add_subdirectory(examples)
+
+if (WINCORE_BUILD_TESTS)
+    add_library(WinCoreTest STATIC ${WINCORE_SOURCES} ${BACKEND_SOURCES})
+
+    target_compile_definitions(WinCoreTest PRIVATE
+        WINCORE_BUILD_STATIC
+    )
+
+    target_include_directories(WinCoreTest PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/source
+        ${CMAKE_CURRENT_SOURCE_DIR}/dependencies
+    )
+
+    if (BACKEND_SDL2)
+        target_include_directories(WinCoreTest PUBLIC ${SDL2_INCLUDE_DIRS})
+        target_link_libraries(WinCoreTest PUBLIC ${SDL2_LIBRARIES})
+    endif()
+
+    if (BACKEND_SDL3)
+        target_include_directories(WinCoreTest PUBLIC ${SDL3_INCLUDE_DIRS})
+        target_link_libraries(WinCoreTest PUBLIC ${SDL3_LIBRARIES})
+    endif()
+
+    if (WIN32)
+        target_link_libraries(WinCoreTest PUBLIC opengl32)
+    else()
+        target_link_libraries(WinCoreTest PUBLIC OpenGL::GL)
+    endif()
+
+    if (UNIX)
+        target_link_libraries(WinCoreTest PUBLIC m)
+    endif()
+
+    add_executable(test test.cpp)
+    target_link_libraries(test PRIVATE WinCoreTest)
+endif()

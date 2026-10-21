@@ -106,14 +106,16 @@ BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 	}
 
 	EventHandler& events = MainApplication()._eventHandler;
-	MessageQueue& queue  = events.Messages();
+	MessageQueue& queue = events.Messages();
 
 	for (;;)
 	{
 		events.PumpEvents();
 
 		MSG msg;
-		bool ok = (hWnd == NULL && wMsgFilterMin == 0 && wMsgFilterMax == 0) ? queue.Pop(msg) : queue.PeekFiltered(msg, true, hWnd, wMsgFilterMin, wMsgFilterMax);
+		bool ok = (hWnd == NULL && wMsgFilterMin == 0 && wMsgFilterMax == 0)
+			? queue.Pop(msg)
+			: queue.PeekFiltered(msg, true, hWnd, wMsgFilterMin, wMsgFilterMax);
 
 		if (ok)
 		{
@@ -125,11 +127,6 @@ BOOL GetMessageA(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax)
 			}
 
 			return TRUE;
-		}
-
-		if (!queue.IsRunning())
-		{
-			return FALSE;
 		}
 
 		if (!events.WaitAndPush())
