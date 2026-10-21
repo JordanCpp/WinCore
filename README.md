@@ -73,6 +73,8 @@ WINCORE_API BOOL FreeLibrary(HMODULE hLibModule);
 WINCORE_API FARPROC GetProcAddress(HMODULE hModule, LPCSTR lpProcName);
 WINCORE_API DWORD GetTickCount(void);
 WINCORE_API void Sleep(DWORD dwMilliseconds);
+WINCORE_API DWORD GetLastError(void);
+WINCORE_API void SetLastError(DWORD dwErrCode);
 ```
 
 #### 🖼️ User32.dll

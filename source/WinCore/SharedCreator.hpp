@@ -9,8 +9,13 @@
 class SharedCreator
 {
 public:
-	Shared* Create(LPCSTR lpLibFileName);
+    SharedCreator();
+
+    Shared* Create(LPCSTR lpLibFileName);
+
 private:
+    SharedCreator(const SharedCreator&);
+    SharedCreator& operator=(const SharedCreator&);
 };
 
 #endif

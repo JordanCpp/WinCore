@@ -6,16 +6,32 @@ ATOM RegisterClassA(const WNDCLASSA* lpWndClass)
 {
 	if (!lpWndClass)
 	{
+		MainApplication().SetLastError(ERROR_INVALID_PARAMETER);
 		return 0;
 	}
 
-	MainApplication()._classRegistrator.Append(lpWndClass);
+	ATOM atom = MainApplication()._classRegistrator.Append(lpWndClass);
 
-	return true;
+	if (atom == 0)
+	{
+		MainApplication().SetLastError(ERROR_CLASS_ALREADY_EXISTS);
+	}
+	else
+	{
+		MainApplication().SetLastError(ERROR_SUCCESS);
+	}
+
+	return atom;
 }
 
 HWND CreateWindowExA(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
+	if (!MainApplication()._initializer.IsInitialized())
+	{
+		MainApplication().SetLastError(ERROR_INVALID_PARAMETER);
+		return NULL;
+	}
+
 	Window* window = MainApplication()._windowCreator.Create(dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 	
 	if (!window)

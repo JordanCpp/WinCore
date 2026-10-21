@@ -2,10 +2,10 @@
 
 #include <WinCore/Application.hpp>
 
-static Application _application;
-
 Application::Application() :
-	_eventHandler(_windowManager)
+    _moduleManager(_sharedCreator),
+    _eventHandler(_windowManager),
+    _lastError(0)
 {
 }
 
@@ -13,7 +13,18 @@ Application::~Application()
 {
 }
 
+void Application::SetLastError(DWORD err)
+{
+    _lastError = err;
+}
+
+DWORD Application::GetLastError() const
+{
+    return _lastError;
+}
+
 Application& MainApplication()
 {
-	return _application;
+    static Application app;
+    return app;
 }

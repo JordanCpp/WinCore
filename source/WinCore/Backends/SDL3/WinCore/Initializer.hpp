@@ -6,8 +6,16 @@
 class Initializer
 {
 public:
-	Initializer();
-	~Initializer();
+    Initializer();
+    ~Initializer();
+
+    bool IsInitialized() const;
+
+private:
+    Initializer(const Initializer&);
+    Initializer& operator=(const Initializer&);
+
+    bool _initialized;
 };
 
 #endif

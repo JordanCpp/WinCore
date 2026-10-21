@@ -13,22 +13,34 @@
 #include <WinCore/Cursor.hpp>
 #include <WinCore/AsyncKey.hpp>
 #include <WinCore/OpenGLFunc.hpp>
+#include <WinCore/ModuleManager.hpp>
 
 class Application
 {
 public:
-	Application();
-	~Application();
-	Initializer      _initializer;
-	WindowManager    _windowManager;
-	EventHandler     _eventHandler;
-	ClassRegistrator _classRegistrator;
-	WindowCreator    _windowCreator;
-	SharedCreator    _sharedCreator;
-	Ticks            _ticks;
-	Cursor           _cursor;
-	AsyncKey         _asyncKey;
-	OpenGLFuncs      _openGLFuncs;
+    Application();
+    ~Application();
+
+    void  SetLastError(DWORD err);
+    DWORD GetLastError() const;
+
+    Initializer      _initializer;
+    WindowManager    _windowManager;
+    SharedCreator    _sharedCreator;
+    ModuleManager    _moduleManager;
+    EventHandler     _eventHandler;
+    ClassRegistrator _classRegistrator;
+    WindowCreator    _windowCreator;
+    Ticks            _ticks;
+    Cursor           _cursor;
+    AsyncKey         _asyncKey;
+    OpenGLFuncs      _openGLFuncs;
+
+private:
+    Application(const Application&);
+    Application& operator=(const Application&);
+
+    DWORD _lastError;
 };
 
 Application& MainApplication();

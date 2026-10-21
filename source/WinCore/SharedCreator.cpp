@@ -1,12 +1,31 @@
 // Copyright (C) 2026 Evgeny Zoshchuk (JordanCpp). Licensed under LGPL-3.0-or-later.
 
+#include <new>
 #include <WinCore/SharedCreator.hpp>
 
-Shared* SharedCreator::Create(LPCSTR lpLibFileName)
+SharedCreator::SharedCreator()
 {
-	Shared* shared = new Shared;
+}
 
-	shared->Load(lpLibFileName);
+Shared* SharedCreator::Create(const char* lpLibFileName)
+{
+    if (!lpLibFileName || !*lpLibFileName)
+    {
+        return NULL;
+    }
 
-	return shared;
+    Shared* shared = new (std::nothrow) Shared;
+
+    if (!shared)
+    {
+        return NULL;
+    }
+
+    if (!shared->Load(lpLibFileName))
+    {
+        delete shared;
+        return NULL;
+    }
+
+    return shared;
 }

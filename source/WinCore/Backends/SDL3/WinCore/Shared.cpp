@@ -2,24 +2,53 @@
 
 #include <WinCore/Shared.hpp>
 
-void* Shared::Load(const char* path)
+Shared::Shared() :
+    _object(NULL)
 {
-	_object = SDL_LoadObject(path);
+}
 
-	return _object;
+Shared::~Shared()
+{
+    Unload();
+}
+
+bool Shared::Load(const char* path)
+{
+    if (!path || !*path)
+    {
+        return false;
+    }
+
+    if (_object)
+    {
+        return true;
+    }
+
+    _object = SDL_LoadObject(path);
+
+    return _object != NULL;
 }
 
 void Shared::Unload()
 {
-	if (_object)
-	{
-		SDL_UnloadObject(_object);
-	}
+    if (_object)
+    {
+        SDL_UnloadObject(_object);
+        _object = NULL;
+    }
 }
 
 void* Shared::GetFunction(const char* name)
 {
-	void* func = (void*)SDL_LoadFunction(_object, name);
-	
-	return func;
+    if (!_object || !name || !*name)
+    {
+        return NULL;
+    }
+
+    return (void*)SDL_LoadFunction(_object, name);
+}
+
+bool Shared::IsLoaded() const
+{
+    return _object != NULL;
 }
