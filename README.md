@@ -104,6 +104,8 @@ WINCORE_API BOOL SetWindowText(HWND hWnd, LPCSTR lpString);
 WINCORE_API HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
 WINCORE_API BOOL EndPaint(HWND hWnd, const PAINTSTRUCT* lpPaint);
 WINCORE_API BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase);
+WINCORE_API LONG ChangeDisplaySettingsA(LPDEVMODEA lpDevMode, DWORD dwFlags);
+WINCORE_API BOOL EnumDisplaySettingsA(LPCSTR lpszDeviceName, DWORD iModeNum, LPDEVMODEA lpDevMode);
 ```
 
 #### 🎨 Gdi32.dll

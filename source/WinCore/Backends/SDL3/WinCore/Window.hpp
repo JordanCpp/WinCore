@@ -46,6 +46,12 @@ public:
 	void EndFrame();
 	void SetClipRect(const RECT* lpRect);
 
+	int  GetDisplayModeCount() const;
+	BOOL GetDisplayMode(int index, DEVMODEA* dm) const;
+	BOOL GetCurrentDisplayMode(DEVMODEA* dm) const;
+	BOOL SetDisplayMode(const DEVMODEA* dm);
+	BOOL ResetDisplayMode();
+
 private:
 	SDL_Window*    _window;
 	SDL_Renderer*  _renderer;

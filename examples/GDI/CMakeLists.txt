@@ -22,6 +22,7 @@ function(add_wincore_example EXAMPLE_NAME)
 endfunction()
 
 set(WINCORE_EXAMPLES
+    GDI_FullScreen
     GDI_RgbBuffer
     GDI_Upscaling
 )

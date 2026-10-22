@@ -26,6 +26,30 @@ extern "C" {
         DWORD     dwExStyle;      /* Extended style flags for the window */
     } CREATESTRUCTA, * LPCREATESTRUCTA;
 
+    typedef struct _devicemodeA 
+    {
+        char  dmDeviceName[32];
+        WORD  dmSpecVersion;
+        WORD  dmDriverVersion;
+        WORD  dmSize;
+        WORD  dmDriverExtra;
+        DWORD dmFields;
+        DWORD dmPelsWidth;
+        DWORD dmPelsHeight;
+        DWORD dmDisplayFrequency;
+    } DEVMODEA, * LPDEVMODEA;
+
+#define DM_PELSWIDTH          0x00080000
+#define DM_PELSHEIGHT         0x00100000
+#define DM_DISPLAYFREQUENCY   0x00400000
+
+#define CDS_FULLSCREEN        0x00000004
+#define CDS_RESET             0x40000000
+#define DISP_CHANGE_SUCCESSFUL 0
+#define DISP_CHANGE_BADMODE   (-2)
+#define DISP_CHANGE_FAILED    (-1)
+
+#define ENUM_CURRENT_SETTINGS ((DWORD)-1)
 
 #define PM_NOREMOVE 0x0000
 #define PM_REMOVE   0x0001
@@ -213,6 +237,10 @@ WINCORE_API HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint);
 WINCORE_API BOOL EndPaint(HWND hWnd, const PAINTSTRUCT* lpPaint);
 
 WINCORE_API BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase);
+
+WINCORE_API LONG ChangeDisplaySettingsA(LPDEVMODEA lpDevMode, DWORD dwFlags);
+
+WINCORE_API BOOL EnumDisplaySettingsA(LPCSTR lpszDeviceName, DWORD iModeNum, LPDEVMODEA lpDevMode);
 
 #define CreateWindowA(lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam) CreateWindowExA(0L, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam)
 

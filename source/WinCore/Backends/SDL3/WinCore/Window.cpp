@@ -533,3 +533,99 @@ void Window::SetClipRect(const RECT* lpRect)
 
 	SDL_SetRenderClipRect(_renderer, &r);
 }
+
+int Window::GetDisplayModeCount() const
+{
+	if (!_window) return 0;
+
+	SDL_DisplayID displayID = SDL_GetDisplayForWindow(_window);
+	if (displayID == 0) return 0;
+
+	int count = 0;
+	SDL_DisplayMode** modes = SDL_GetFullscreenDisplayModes(displayID, &count);
+
+	if (!modes) return 0;
+
+	SDL_free(modes);
+	return count;
+}
+
+BOOL Window::GetDisplayMode(int index, DEVMODEA* dm) const
+{
+	if (!_window || !dm) return FALSE;
+
+	SDL_DisplayID displayID = SDL_GetDisplayForWindow(_window);
+	if (displayID == 0) return FALSE;
+
+	int count = 0;
+	SDL_DisplayMode** modes = SDL_GetFullscreenDisplayModes(displayID, &count);
+
+	if (!modes) return FALSE;
+
+	BOOL result = FALSE;
+
+	if (index >= 0 && index < count)
+	{
+		const SDL_DisplayMode* mode = modes[index];
+		dm->dmPelsWidth = (DWORD)mode->w;
+		dm->dmPelsHeight = (DWORD)mode->h;
+		dm->dmDisplayFrequency = (DWORD)(mode->refresh_rate > 0.0f ? mode->refresh_rate : 60.0f);
+		dm->dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+		result = TRUE;
+	}
+
+	SDL_free(modes);
+	return result;
+}
+
+BOOL Window::GetCurrentDisplayMode(DEVMODEA* dm) const
+{
+	if (!_window || !dm) return FALSE;
+
+	SDL_DisplayID displayID = SDL_GetDisplayForWindow(_window);
+	if (displayID == 0) return FALSE;
+
+	const SDL_DisplayMode* mode = SDL_GetCurrentDisplayMode(displayID);
+	if (!mode) return FALSE;
+
+	dm->dmPelsWidth = (DWORD)mode->w;
+	dm->dmPelsHeight = (DWORD)mode->h;
+	dm->dmDisplayFrequency = (DWORD)(mode->refresh_rate > 0.0f ? mode->refresh_rate : 60.0f);
+	dm->dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+
+	return TRUE;
+}
+
+BOOL Window::SetDisplayMode(const DEVMODEA* dm)
+{
+	if (!_window || !dm) return FALSE;
+
+	SDL_DisplayID displayID = SDL_GetDisplayForWindow(_window);
+	if (displayID == 0) return FALSE;
+
+	SDL_DisplayMode closest;
+	SDL_zero(closest);
+
+	if (!SDL_GetClosestFullscreenDisplayMode(displayID,
+		(int)dm->dmPelsWidth,
+		(int)dm->dmPelsHeight,
+		(float)dm->dmDisplayFrequency,
+		false,
+		&closest))
+	{
+		return FALSE;
+	}
+
+	if (!SDL_SetWindowFullscreenMode(_window, &closest))
+	{
+		return FALSE;
+	}
+
+	return SDL_SetWindowFullscreen(_window, true) ? TRUE : FALSE;
+}
+
+BOOL Window::ResetDisplayMode()
+{
+	if (!_window) return FALSE;
+	return SDL_SetWindowFullscreen(_window, false) ? TRUE : FALSE;
+}

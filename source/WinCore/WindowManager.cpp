@@ -72,3 +72,8 @@ BOOL WindowManager::Destroy(HWND handle)
 
 	return FALSE;
 }
+
+const WindowManager::container& WindowManager::GetWindows() const
+{
+	return _windows; 
+}

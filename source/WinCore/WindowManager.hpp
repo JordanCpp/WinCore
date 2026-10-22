@@ -9,6 +9,7 @@
 class WindowManager
 {
 public:
+	typedef std::map<HWND, Window*> container;
 	WindowManager();
 	~WindowManager();
 	void Append(HWND handle, Window* window);
@@ -16,8 +17,8 @@ public:
 	Window* Find(HWND hwnd);
 	Window* FindNative(void* native);
 	BOOL Destroy(HWND handle);
+	const container& GetWindows() const;
 private:
-	typedef std::map<HWND, Window*> container;
 	container _windows;
 };
 

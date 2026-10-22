@@ -333,3 +333,66 @@ BOOL SetWindowTextA(HWND hWnd, LPCSTR lpString)
 
 	return window->SetWindowTextA(lpString);
 }
+
+BOOL EnumDisplaySettingsA(LPCSTR lpszDeviceName, DWORD iModeNum, LPDEVMODEA lpDevMode)
+{
+	(void)lpszDeviceName;
+
+	if (!lpDevMode)
+	{
+		MainApplication().SetLastError(ERROR_INVALID_PARAMETER);
+		return FALSE;
+	}
+
+	const WindowManager::container& windows = MainApplication()._windowManager.GetWindows();
+
+	if (windows.empty())
+	{
+		return FALSE;
+	}
+
+	Window* window = windows.begin()->second;
+
+	if (iModeNum == ENUM_CURRENT_SETTINGS)
+	{
+		return window->GetCurrentDisplayMode(lpDevMode) ? TRUE : FALSE;
+	}
+
+	return window->GetDisplayMode((int)iModeNum, lpDevMode) ? TRUE : FALSE;
+}
+
+LONG ChangeDisplaySettingsA(LPDEVMODEA lpDevMode, DWORD dwFlags)
+{
+	if (!lpDevMode)
+	{
+		if (dwFlags & CDS_RESET)
+		{
+			const WindowManager::container& windows = MainApplication()._windowManager.GetWindows();
+
+			for (WindowManager::container::const_iterator i = windows.begin(); i != windows.end(); ++i)
+			{
+				i->second->ResetDisplayMode();
+			}
+
+			return DISP_CHANGE_SUCCESSFUL;
+		}
+
+		return DISP_CHANGE_FAILED;
+	}
+
+	const WindowManager::container& windows = MainApplication()._windowManager.GetWindows();
+
+	if (windows.empty())
+	{
+		return DISP_CHANGE_FAILED;
+	}
+
+	Window* window = windows.begin()->second;
+
+	if (!window->SetDisplayMode(lpDevMode))
+	{
+		return DISP_CHANGE_BADMODE;
+	}
+
+	return DISP_CHANGE_SUCCESSFUL;
+}
