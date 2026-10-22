@@ -78,6 +78,17 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	int w = (_baseWindow.nWidth == CW_USEDEFAULT) ? 800 : _baseWindow.nWidth;
 	int h = (_baseWindow.nHeight == CW_USEDEFAULT) ? 600 : _baseWindow.nHeight;
 
+	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+
 	SDL_PropertiesID props = SDL_CreateProperties();
 	SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, _baseWindow.lpWindowName.c_str());
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, x);
@@ -85,10 +96,11 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
 	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
 
+	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
+
 	StylesToProperties(props, _baseWindow.dwStyle, _baseWindow.dwExStyle);
 
 	_window = SDL_CreateWindowWithProperties(props);
-
 	SDL_DestroyProperties(props);
 }
 
@@ -128,50 +140,13 @@ const std::string& Window::GetClassName() const
 
 void Window::CreateContext()
 {
-	if (_glContext)
-	{
-		return;
-	}
+	if (_glContext) return;
+	if (!_window) return;
 
 	if (_renderer)
 	{
-		SDL_DestroyRenderer(_renderer);
-		_renderer = NULL;
+		return;
 	}
-
-	int x = 0;
-	int	y = 0;
-	int	w = 0;
-	int	h = 0;
-
-	SDL_GetWindowPosition(_window, &x, &y);
-	SDL_GetWindowSize(_window, &w, &h);
-
-	bool isCurrentlyVisible = (_window && !(SDL_GetWindowFlags(_window) & SDL_WINDOW_HIDDEN));
-
-	if (_window)
-	{
-		SDL_DestroyWindow(_window);
-	}
-
-	SDL_PropertiesID props = SDL_CreateProperties();
-	SDL_SetStringProperty(props, SDL_PROP_WINDOW_CREATE_TITLE_STRING, _baseWindow.lpWindowName.c_str());
-	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_X_NUMBER, x);
-	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_Y_NUMBER, y);
-	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_WIDTH_NUMBER, w);
-	SDL_SetNumberProperty(props, SDL_PROP_WINDOW_CREATE_HEIGHT_NUMBER, h);
-	SDL_SetBooleanProperty(props, SDL_PROP_WINDOW_CREATE_OPENGL_BOOLEAN, true);
-
-	DWORD activeStyle = _baseWindow.dwStyle;
-	if (isCurrentlyVisible)
-	{
-		activeStyle |= WS_VISIBLE;
-	}
-
-	StylesToProperties(props, activeStyle, _baseWindow.dwExStyle);
-
-	_window = SDL_CreateWindowWithProperties(props);
-	SDL_DestroyProperties(props);
 
 	_glContext = SDL_GL_CreateContext(_window);
 }
@@ -412,41 +387,6 @@ int Window::ChoosePixelFormat(const PIXELFORMATDESCRIPTOR* ppfd)
 		return 0;
 	}
 
-	if (ppfd->dwFlags & PFD_DOUBLEBUFFER)
-	{
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	}
-	else
-	{
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
-	}
-
-	if (ppfd->cColorBits >= 24)
-	{
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-		if (ppfd->cColorBits == 32)
-		{
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-		}
-		else
-		{
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
-		}
-	}
-	else if (ppfd->cColorBits == 16)
-	{
-		SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 5);
-		SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 6);
-		SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 5);
-		SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 0);
-	}
-
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, ppfd->cDepthBits);
-
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, ppfd->cStencilBits);
-
 	return 1;
 }
 
@@ -462,25 +402,27 @@ BOOL Window::SetPixelFormat(int format, const PIXELFORMATDESCRIPTOR* ppfd)
 		return FALSE;
 	}
 
-	if (ppfd)
+	if (!ppfd)
 	{
-		if (!(ppfd->dwFlags & PFD_SUPPORT_OPENGL))
-		{
-			return FALSE;
-		}
-
-		if (ppfd->dwFlags & PFD_DOUBLEBUFFER)
-		{
-			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-		}
-		else
-		{
-			SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
-		}
-
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, ppfd->cDepthBits);
-		SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, ppfd->cStencilBits);
+		return TRUE;
 	}
+
+	if (!(ppfd->dwFlags & PFD_SUPPORT_OPENGL))
+	{
+		return FALSE;
+	}
+
+	if (ppfd->dwFlags & PFD_DOUBLEBUFFER)
+	{
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+	}
+	else
+	{
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+	}
+
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, ppfd->cDepthBits);
+	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, ppfd->cStencilBits);
 
 	return TRUE;
 }
