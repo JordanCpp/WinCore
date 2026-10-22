@@ -47,11 +47,16 @@ public:
 	void SetClipRect(const RECT* lpRect);
 
 private:
-	SDL_Window* _window;
-	SDL_Renderer* _renderer;
+	SDL_Window*    _window;
+	SDL_Renderer*  _renderer;
 	SDL_GLContext  _glContext;
 	BaseWindow     _baseWindow;
+	
 	BOOL           _inPaint;
+
+	SDL_Texture*   _streamTexture;
+	int            _streamW;
+	int            _streamH;
 };
 
 #endif

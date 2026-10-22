@@ -54,7 +54,10 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 	_window(NULL),
 	_renderer(NULL),
 	_glContext(NULL),
-	_inPaint(FALSE)
+	_inPaint(FALSE),
+	_streamTexture(NULL),
+	_streamW(0),
+	_streamH(0)
 {
 	_baseWindow.dwExStyle = dwExStyle;
 	_baseWindow.lpClassName = lpClassName ? lpClassName : "";
@@ -91,6 +94,12 @@ Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD d
 
 Window::~Window()
 {
+	if (_streamTexture)
+	{
+		SDL_DestroyTexture(_streamTexture);
+		_streamTexture = NULL;
+	}
+
 	if (_glContext)
 	{
 		SDL_GL_DestroyContext(_glContext);
@@ -198,38 +207,44 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 		lpBits, srcWidth, srcHeight, biHeight, FALSE, FALSE);
 }
 
-BOOL Window::BlitDIBitsFlip(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight, BOOL flipX, BOOL flipY)
+BOOL Window::BlitDIBitsFlip(int xDest, int yDest, int wDest, int hDest,
+	int xSrc, int ySrc, int wSrc, int hSrc,
+	const void* lpBits, int srcWidth, int srcHeight, int biHeight,
+	BOOL flipX, BOOL flipY)
 {
-	if (_glContext)
-	{
-		return FALSE;
-	}
-
-	if (wSrc <= 0 || hSrc <= 0 || wDest <= 0 || hDest <= 0)
-	{
-		return FALSE;
-	}
+	if (_glContext) return FALSE;
+	if (wSrc <= 0 || hSrc <= 0 || wDest <= 0 || hDest <= 0) return FALSE;
+	if (srcWidth <= 0 || srcHeight <= 0) return FALSE;
 
 	if (!_renderer)
 	{
 		_renderer = SDL_CreateRenderer(_window, NULL);
-
-		if (!_renderer)
-		{
-			return FALSE;
-		}
+		if (!_renderer) return FALSE;
 	}
 
-	SDL_Texture* texture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_XRGB8888, SDL_TEXTUREACCESS_STREAMING, srcWidth, srcHeight);
-	if (!texture)
+	if (!_streamTexture || _streamW != srcWidth || _streamH != srcHeight)
 	{
-		return FALSE;
+		if (_streamTexture)
+		{
+			SDL_DestroyTexture(_streamTexture);
+			_streamTexture = NULL;
+		}
+
+		_streamTexture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_XRGB8888, SDL_TEXTUREACCESS_STREAMING, srcWidth, srcHeight);
+		if (!_streamTexture)
+		{
+			_streamW = 0;
+			_streamH = 0;
+			return FALSE;
+		}
+
+		_streamW = srcWidth;
+		_streamH = srcHeight;
 	}
 
 	int pitch = srcWidth * 4;
-	if (!SDL_UpdateTexture(texture, NULL, lpBits, pitch))
+	if (!SDL_UpdateTexture(_streamTexture, NULL, lpBits, pitch))
 	{
-		SDL_DestroyTexture(texture);
 		return FALSE;
 	}
 
@@ -255,25 +270,18 @@ BOOL Window::BlitDIBitsFlip(int xDest, int yDest, int wDest, int hDest, int xSrc
 	}
 
 	SDL_FlipMode flip = SDL_FLIP_NONE;
-	if (flipX)
-	{
-		flip = (SDL_FlipMode)(flip | SDL_FLIP_HORIZONTAL);
-	}
-	if (flipY)
-	{
-		flip = (SDL_FlipMode)(flip | SDL_FLIP_VERTICAL);
-	}
+	if (flipX) flip = (SDL_FlipMode)(flip | SDL_FLIP_HORIZONTAL);
+	if (flipY) flip = (SDL_FlipMode)(flip | SDL_FLIP_VERTICAL);
 
 	if (flip != SDL_FLIP_NONE)
 	{
-		SDL_RenderTextureRotated(_renderer, texture, &srcRect, &destRect, 0.0, NULL, flip);
+		SDL_RenderTextureRotated(_renderer, _streamTexture, &srcRect, &destRect,
+			0.0, NULL, flip);
 	}
 	else
 	{
-		SDL_RenderTexture(_renderer, texture, &srcRect, &destRect);
+		SDL_RenderTexture(_renderer, _streamTexture, &srcRect, &destRect);
 	}
-
-	SDL_DestroyTexture(texture);
 
 	if (!_inPaint)
 	{
