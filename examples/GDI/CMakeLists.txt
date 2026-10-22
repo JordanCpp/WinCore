@@ -25,6 +25,7 @@ set(WINCORE_EXAMPLES
     GDI_FullScreen
     GDI_RgbBuffer
     GDI_Upscaling
+    WinMM_Hello
 )
 
 foreach(EXAMPLE IN LISTS WINCORE_EXAMPLES)

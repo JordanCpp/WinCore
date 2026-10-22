@@ -126,6 +126,20 @@ WINCORE_API PROC wglGetProcAddress(LPCSTR unnamedParam1);
 WINCORE_API HGLRC wglCreateContextAttribsARB(HDC hdc, HGLRC hShareContext, const int* attribList);
 ```
 
+#### WinMM.dll
+```c
+WINCORE_API MMRESULT waveOutGetNumDevs(void);
+WINCORE_API MMRESULT waveOutOpen(LPHWAVEOUT phwo, UINT uDeviceID, LPCWAVEFORMATEX pwfx, DWORD_PTR dwCallback, DWORD_PTR dwInstance, DWORD fdwOpen);
+WINCORE_API MMRESULT waveOutClose(HWAVEOUT hwo);
+WINCORE_API MMRESULT waveOutPrepareHeader(HWAVEOUT hwo, LPWAVEHDR pwh, UINT cbwh);
+WINCORE_API MMRESULT waveOutUnprepareHeader(HWAVEOUT hwo, LPWAVEHDR pwh, UINT cbwh);
+WINCORE_API MMRESULT waveOutWrite(HWAVEOUT hwo, LPWAVEHDR pwh, UINT cbwh);
+WINCORE_API MMRESULT waveOutReset(HWAVEOUT hwo);
+WINCORE_API MMRESULT waveOutGetPosition(HWAVEOUT hwo, LPMMTIME pmmt, UINT cbmmt);
+WINCORE_API MMRESULT waveOutSetVolume(HWAVEOUT hwo, DWORD dwVolume);
+WINCORE_API MMRESULT waveOutGetVolume(HWAVEOUT hwo, LPDWORD pdwVolume);
+```
+
 ---
 
 ## Core Execution Model

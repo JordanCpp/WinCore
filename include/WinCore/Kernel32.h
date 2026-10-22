@@ -20,6 +20,7 @@ extern "C" {
 #define ERROR_MOD_NOT_FOUND        126
 #define ERROR_PROC_NOT_FOUND       127
 #define ERROR_CLASS_ALREADY_EXISTS 1410
+#define ERROR_NOT_SUPPORTED 50L
 
 typedef int (FAR WINAPI* FARPROC)();
 

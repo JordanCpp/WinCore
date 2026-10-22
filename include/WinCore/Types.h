@@ -72,6 +72,8 @@ typedef LONG_PTR        LRESULT;
 typedef short           SHORT;
 typedef unsigned short  USHORT;
 
+typedef DWORD* LPDWORD;
+
 typedef char  CHAR;
 typedef char* LPSTR;
 typedef const CHAR* LPCSTR;

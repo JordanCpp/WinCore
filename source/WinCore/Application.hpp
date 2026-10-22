@@ -14,6 +14,7 @@
 #include <WinCore/AsyncKey.hpp>
 #include <WinCore/OpenGLFunc.hpp>
 #include <WinCore/ModuleManager.hpp>
+#include <WinCore/AudioDeviceManager.hpp>
 
 class Application
 {
@@ -35,6 +36,7 @@ public:
     Cursor           _cursor;
     AsyncKey         _asyncKey;
     OpenGLFuncs      _openGLFuncs;
+    AudioDeviceManager _audioDevices;
 
 private:
     Application(const Application&);

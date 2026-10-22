@@ -8,7 +8,7 @@
 Initializer::Initializer() :
     _initialized(false)
 {
-    _initialized = SDL_Init(SDL_INIT_VIDEO);
+    _initialized = SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
     if (!_initialized)
     {
