@@ -81,8 +81,13 @@ int SetDIBitsToDevice(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, i
 		return 0;
 	}
 
-	HWND hWnd = (HWND)hdc;
-	Window* window = MainApplication()._windowManager.Find(hWnd);
+	if (lpbmi->bmiHeader.biBitCount != 32)
+	{
+		return 0;
+	}
+
+	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
+	
 	if (!window)
 	{
 		return 0;
@@ -90,11 +95,19 @@ int SetDIBitsToDevice(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, i
 
 	int srcWidth = lpbmi->bmiHeader.biWidth;
 	int biHeight = lpbmi->bmiHeader.biHeight;
-	int srcHeight = (biHeight < 0) ? -biHeight : biHeight;
+	int fullHeight = (biHeight < 0) ? -biHeight : biHeight;
 
-	BOOL success = window->BlitDIBits(xDest, yDest, static_cast<int>(wDest), static_cast<int>(hDest), xSrc, ySrc, srcWidth, srcHeight, lpvBits, srcWidth, srcHeight, biHeight);
+	UINT scanLines = cScanLines ? cScanLines : (UINT)(fullHeight - uStartScan);
+	if (uStartScan + scanLines > (UINT)fullHeight)
+	{
+		return 0;
+	}
 
-	return success ? cScanLines : 0;
+	const void* bits = lpvBits;
+
+	BOOL ok = window->BlitDIBits(xDest, yDest, (int)wDest, (int)hDest, xSrc, ySrc, srcWidth, (int)scanLines, bits, srcWidth, fullHeight, biHeight);
+
+	return ok ? (int)scanLines : 0;
 }
 
 int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop)
@@ -103,9 +116,13 @@ int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc,
 	{
 		return 0;
 	}
+	
+	if (lpbmi->bmiHeader.biBitCount != 32)
+	{
+		return 0;
+	}
 
-	HWND hWnd = (HWND)hdc;
-	Window* window = MainApplication()._windowManager.Find(hWnd);
+	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
 	if (!window)
 	{
 		return 0;
@@ -113,11 +130,16 @@ int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc,
 
 	int srcWidth = lpbmi->bmiHeader.biWidth;
 	int biHeight = lpbmi->bmiHeader.biHeight;
-	int srcHeight = std::abs(biHeight);
+	int fullHeight = (biHeight < 0) ? -biHeight : biHeight;
 
-	BOOL success = window->BlitDIBits(xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, lpBits, srcWidth, srcHeight, biHeight);
+	if (wSrc <= 0 || hSrc <= 0 || wDest <= 0 || hDest <= 0)
+	{
+		return 0;
+	}
 
-	return success ? hSrc : 0;
+	BOOL ok = window->BlitDIBits(xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, lpBits, srcWidth, fullHeight, biHeight);
+
+	return ok ? hSrc : 0;
 }
 
 int ReleaseDC(HWND hWnd, HDC hDC)
@@ -154,16 +176,14 @@ HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint)
 	memset(lpPaint, 0, sizeof(PAINTSTRUCT));
 	lpPaint->hdc = hdc;
 	lpPaint->fErase = FALSE;
-	lpPaint->fRestore = FALSE;
-	lpPaint->fIncUpdate = FALSE;
 
 	RECT rc;
-	rc.left = 0;
-	rc.top = 0;
+	rc.left = 0; rc.top = 0;
 	rc.right = window->GetWidth();
 	rc.bottom = window->GetHeight();
-
 	lpPaint->rcPaint = rc;
+
+	window->BeginFrame();
 
 	window->SetPaintValid(TRUE);
 
@@ -177,8 +197,13 @@ BOOL EndPaint(HWND hWnd, const PAINTSTRUCT* lpPaint)
 		return FALSE;
 	}
 
-	(void)hWnd;
-	(void)lpPaint;
+	Window* window = MainApplication()._windowManager.Find(hWnd);
+	if (!window)
+	{
+		return FALSE;
+	}
+
+	window->EndFrame();
 
 	return TRUE;
 }

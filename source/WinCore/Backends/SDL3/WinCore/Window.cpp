@@ -198,10 +198,15 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 		return FALSE;
 	}
 
-	if (!_renderer)
+	if (wSrc <= 0 || hSrc <= 0 || wDest <= 0 || hDest <= 0)
 	{
-		_renderer = SDL_CreateRenderer(_window, NULL);
+		return FALSE;
+	}
 
+	if (!_renderer)
+	{ 
+		_renderer = SDL_CreateRenderer(_window, NULL); 
+		
 		if (!_renderer)
 		{
 			return FALSE;
@@ -209,44 +214,40 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 	}
 
 	SDL_Texture* texture = SDL_CreateTexture(_renderer, SDL_PIXELFORMAT_XRGB8888, SDL_TEXTUREACCESS_STREAMING, srcWidth, srcHeight);
-	if (!texture) 
+	if (!texture)
 	{
 		return FALSE;
 	}
 
 	int pitch = srcWidth * 4;
-
 	if (!SDL_UpdateTexture(texture, NULL, lpBits, pitch))
-	{
-		SDL_DestroyTexture(texture);
-
-		return FALSE;
+	{ 
+		SDL_DestroyTexture(texture); return FALSE; 
 	}
 
 	SDL_FRect srcRect;
-	srcRect.x = static_cast<float>(xSrc);
-	srcRect.y = static_cast<float>(ySrc);
-	srcRect.w = static_cast<float>(wSrc);
-	srcRect.h = static_cast<float>(hSrc);
+	srcRect.w = (float)wSrc;
+	srcRect.h = (float)hSrc;
 
 	SDL_FRect destRect;
-	destRect.x = static_cast<float>(xDest);
-	destRect.y = static_cast<float>(yDest);
-	destRect.w = static_cast<float>(wDest);
-	destRect.h = static_cast<float>(hDest);
-
-	SDL_RenderClear(_renderer);
+	destRect.x = (float)xDest;
+	destRect.y = (float)yDest;
+	destRect.w = (float)wDest;
+	destRect.h = (float)hDest;
 
 	if (biHeight > 0)
 	{
-		SDL_RenderTextureRotated(_renderer, texture, &srcRect, &destRect, 0.0, NULL, SDL_FLIP_VERTICAL);
+		srcRect.x = (float)xSrc;
+		srcRect.y = (float)(srcHeight - (ySrc + hSrc));
 	}
 	else
 	{
-		SDL_RenderTexture(_renderer, texture, &srcRect, &destRect);
+		srcRect.x = (float)xSrc;
+		srcRect.y = (float)ySrc;
 	}
 
-	SDL_RenderPresent(_renderer);
+	SDL_RenderTexture(_renderer, texture, &srcRect, &destRect);
+
 	SDL_DestroyTexture(texture);
 
 	return TRUE;
@@ -508,4 +509,21 @@ HGLRC Window::wglCreateContextAttribsARB(HGLRC hShareContext, const int* attribL
 	CreateContext();
 
 	return (HGLRC)this;
+}
+
+void Window::BeginFrame()
+{
+	if (_renderer)
+	{
+		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
+		SDL_RenderClear(_renderer);
+	}
+}
+
+void Window::EndFrame()
+{
+	if (_renderer)
+	{
+		SDL_RenderPresent(_renderer);
+	}
 }

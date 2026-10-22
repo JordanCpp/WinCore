@@ -34,6 +34,9 @@ public:
 	BOOL SetPixelFormat(int format, const PIXELFORMATDESCRIPTOR* ppfd);
 
 	HGLRC wglCreateContextAttribsARB(HGLRC hShareContext, const int* attribList);
+
+	void BeginFrame();
+	void EndFrame();
 private:
 	SDL_Window*    _window;
 	SDL_Renderer*  _renderer;
