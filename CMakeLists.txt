@@ -141,8 +141,8 @@ add_subdirectory(examples)
 if (WINCORE_BUILD_TESTS)
     add_library(WinCoreTest STATIC ${WINCORE_SOURCES} ${BACKEND_SOURCES})
 
-    target_compile_definitions(WinCoreTest PRIVATE
-        WINCORE_BUILD_STATIC
+    target_compile_definitions(WinCoreTest PUBLIC
+        WINCORE_STATIC
     )
 
     target_include_directories(WinCoreTest PUBLIC

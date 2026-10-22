@@ -12,12 +12,19 @@ class Window
 public:
 	Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 	~Window();
+
+	Window(const Window&);
+	Window& operator=(const Window&);
+
 	void* Native();
 	const std::string& GetClassName() const;
 	void CreateContext();
 	BOOL MakeCurrent();
 	BOOL SwapBuffers();
+
 	BOOL BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight);
+	BOOL BlitDIBitsFlip(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight, BOOL flipX, BOOL flipY);
+
 	BOOL GetClientRect(LPRECT lpRect);
 	BOOL ShowWindow(int nCmdShow);
 	BOOL UpdateWindow();
@@ -37,11 +44,14 @@ public:
 
 	void BeginFrame();
 	void EndFrame();
+	void SetClipRect(const RECT* lpRect);
+
 private:
-	SDL_Window*    _window;
-	SDL_Renderer*  _renderer;
+	SDL_Window* _window;
+	SDL_Renderer* _renderer;
 	SDL_GLContext  _glContext;
 	BaseWindow     _baseWindow;
+	BOOL           _inPaint;
 };
 
 #endif

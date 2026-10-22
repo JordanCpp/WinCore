@@ -53,7 +53,8 @@ static void StylesToProperties(SDL_PropertiesID props, DWORD dwStyle, DWORD dwEx
 Window::Window(DWORD dwExStyle, LPCSTR lpClassName, LPCSTR lpWindowName, DWORD dwStyle, int X, int Y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam) :
 	_window(NULL),
 	_renderer(NULL),
-	_glContext(NULL)
+	_glContext(NULL),
+	_inPaint(FALSE)
 {
 	_baseWindow.dwExStyle = dwExStyle;
 	_baseWindow.lpClassName = lpClassName ? lpClassName : "";
@@ -193,6 +194,12 @@ BOOL Window::SwapBuffers()
 
 BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight)
 {
+	return BlitDIBitsFlip(xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc,
+		lpBits, srcWidth, srcHeight, biHeight, FALSE, FALSE);
+}
+
+BOOL Window::BlitDIBitsFlip(int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, int srcWidth, int srcHeight, int biHeight, BOOL flipX, BOOL flipY)
+{
 	if (_glContext)
 	{
 		return FALSE;
@@ -204,9 +211,9 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 	}
 
 	if (!_renderer)
-	{ 
-		_renderer = SDL_CreateRenderer(_window, NULL); 
-		
+	{
+		_renderer = SDL_CreateRenderer(_window, NULL);
+
 		if (!_renderer)
 		{
 			return FALSE;
@@ -221,8 +228,9 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 
 	int pitch = srcWidth * 4;
 	if (!SDL_UpdateTexture(texture, NULL, lpBits, pitch))
-	{ 
-		SDL_DestroyTexture(texture); return FALSE; 
+	{
+		SDL_DestroyTexture(texture);
+		return FALSE;
 	}
 
 	SDL_FRect srcRect;
@@ -246,9 +254,31 @@ BOOL Window::BlitDIBits(int xDest, int yDest, int wDest, int hDest, int xSrc, in
 		srcRect.y = (float)ySrc;
 	}
 
-	SDL_RenderTexture(_renderer, texture, &srcRect, &destRect);
+	SDL_FlipMode flip = SDL_FLIP_NONE;
+	if (flipX)
+	{
+		flip = (SDL_FlipMode)(flip | SDL_FLIP_HORIZONTAL);
+	}
+	if (flipY)
+	{
+		flip = (SDL_FlipMode)(flip | SDL_FLIP_VERTICAL);
+	}
+
+	if (flip != SDL_FLIP_NONE)
+	{
+		SDL_RenderTextureRotated(_renderer, texture, &srcRect, &destRect, 0.0, NULL, flip);
+	}
+	else
+	{
+		SDL_RenderTexture(_renderer, texture, &srcRect, &destRect);
+	}
 
 	SDL_DestroyTexture(texture);
+
+	if (!_inPaint)
+	{
+		SDL_RenderPresent(_renderer);
+	}
 
 	return TRUE;
 }
@@ -272,7 +302,7 @@ BOOL Window::ShowWindow(int nCmdShow)
 {
 	if (!_window) return FALSE;
 
-	if (nCmdShow == SW_HIDE) 
+	if (nCmdShow == SW_HIDE)
 	{
 		SDL_HideWindow(_window);
 		_baseWindow.dwStyle &= ~WS_VISIBLE;
@@ -518,6 +548,8 @@ void Window::BeginFrame()
 		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
 		SDL_RenderClear(_renderer);
 	}
+
+	_inPaint = TRUE;
 }
 
 void Window::EndFrame()
@@ -526,4 +558,28 @@ void Window::EndFrame()
 	{
 		SDL_RenderPresent(_renderer);
 	}
+
+	_inPaint = FALSE;
+}
+
+void Window::SetClipRect(const RECT* lpRect)
+{
+	if (!_renderer)
+	{
+		return;
+	}
+
+	if (!lpRect)
+	{
+		SDL_SetRenderClipRect(_renderer, NULL);
+		return;
+	}
+
+	SDL_Rect r;
+	r.x = (int)lpRect->left;
+	r.y = (int)lpRect->top;
+	r.w = (int)(lpRect->right - lpRect->left);
+	r.h = (int)(lpRect->bottom - lpRect->top);
+
+	SDL_SetRenderClipRect(_renderer, &r);
 }

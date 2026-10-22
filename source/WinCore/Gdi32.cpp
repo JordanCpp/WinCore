@@ -26,7 +26,7 @@ int ChoosePixelFormat(HDC hdc, const PIXELFORMATDESCRIPTOR* ppfd)
 
 BOOL SetPixelFormat(HDC hdc, int format, const PIXELFORMATDESCRIPTOR* ppfd)
 {
-	if (!hdc || format <= 0 || !ppfd) return false;
+	if (!hdc || format <= 0 || !ppfd) return FALSE;
 
 	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
 
@@ -87,7 +87,7 @@ int SetDIBitsToDevice(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, i
 	}
 
 	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
-	
+
 	if (!window)
 	{
 		return 0;
@@ -97,17 +97,46 @@ int SetDIBitsToDevice(HDC hdc, int xDest, int yDest, DWORD wDest, DWORD hDest, i
 	int biHeight = lpbmi->bmiHeader.biHeight;
 	int fullHeight = (biHeight < 0) ? -biHeight : biHeight;
 
-	UINT scanLines = cScanLines ? cScanLines : (UINT)(fullHeight - uStartScan);
-	if (uStartScan + scanLines > (UINT)fullHeight)
+	if (uStartScan >= (UINT)fullHeight)
 	{
 		return 0;
 	}
 
-	const void* bits = lpvBits;
+	UINT scanLines = cScanLines ? cScanLines : (UINT)(fullHeight - uStartScan);
 
-	BOOL ok = window->BlitDIBits(xDest, yDest, (int)wDest, (int)hDest, xSrc, ySrc, srcWidth, (int)scanLines, bits, srcWidth, fullHeight, biHeight);
+	if (uStartScan + scanLines > (UINT)fullHeight)
+	{
+		scanLines = (UINT)fullHeight - uStartScan;
+	}
 
-	return ok ? (int)scanLines : 0;
+	int localYSrc = ySrc - (int)uStartScan;
+	int localH = (int)scanLines;
+
+	if (localYSrc < 0)
+	{
+		localH += localYSrc;
+		localYSrc = 0;
+	}
+
+	if (localYSrc + localH > (int)scanLines)
+	{
+		localH = (int)scanLines - localYSrc;
+	}
+
+	if (localH <= 0)
+	{
+		return 0;
+	}
+
+	BOOL ok = window->BlitDIBits(
+		xDest, yDest, (int)wDest, (int)hDest,
+		xSrc, localYSrc, srcWidth, localH,
+		lpvBits,
+		srcWidth,
+		(int)scanLines,
+		biHeight);
+
+	return ok ? localH : 0;
 }
 
 int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc, int ySrc, int wSrc, int hSrc, const void* lpBits, const BITMAPINFO* lpbmi, UINT iUsage, DWORD rop)
@@ -116,13 +145,14 @@ int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc,
 	{
 		return 0;
 	}
-	
+
 	if (lpbmi->bmiHeader.biBitCount != 32)
 	{
 		return 0;
 	}
 
 	Window* window = MainApplication()._windowManager.Find((HWND)hdc);
+
 	if (!window)
 	{
 		return 0;
@@ -132,14 +162,29 @@ int StretchDIBits(HDC hdc, int xDest, int yDest, int wDest, int hDest, int xSrc,
 	int biHeight = lpbmi->bmiHeader.biHeight;
 	int fullHeight = (biHeight < 0) ? -biHeight : biHeight;
 
-	if (wSrc <= 0 || hSrc <= 0 || wDest <= 0 || hDest <= 0)
+	if (wSrc == 0 || hSrc == 0 || wDest == 0 || hDest == 0)
 	{
 		return 0;
 	}
 
-	BOOL ok = window->BlitDIBits(xDest, yDest, wDest, hDest, xSrc, ySrc, wSrc, hSrc, lpBits, srcWidth, fullHeight, biHeight);
+	BOOL flipX = ((wSrc < 0) != (wDest < 0));
+	BOOL flipY = ((hSrc < 0) != (hDest < 0));
 
-	return ok ? hSrc : 0;
+	int absSrcW = (wSrc < 0) ? -wSrc : wSrc;
+	int absSrcH = (hSrc < 0) ? -hSrc : hSrc;
+	int absDstW = (wDest < 0) ? -wDest : wDest;
+	int absDstH = (hDest < 0) ? -hDest : hDest;
+
+	BOOL ok = window->BlitDIBitsFlip(
+		xDest, yDest, absDstW, absDstH,
+		xSrc, ySrc, absSrcW, absSrcH,
+		lpBits,
+		srcWidth,
+		fullHeight,
+		biHeight,
+		flipX, flipY);
+
+	return ok ? absSrcH : 0;
 }
 
 int ReleaseDC(HWND hWnd, HDC hDC)
@@ -150,6 +195,7 @@ int ReleaseDC(HWND hWnd, HDC hDC)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd ? hWnd : (HWND)hDC);
+
 	if (!window)
 	{
 		return 0;
@@ -166,6 +212,7 @@ HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return NULL;
@@ -178,14 +225,17 @@ HDC BeginPaint(HWND hWnd, LPPAINTSTRUCT lpPaint)
 	lpPaint->fErase = FALSE;
 
 	RECT rc;
-	rc.left = 0; rc.top = 0;
+	rc.left = 0;
+	rc.top = 0;
 	rc.right = window->GetWidth();
 	rc.bottom = window->GetHeight();
 	lpPaint->rcPaint = rc;
 
-	window->BeginFrame();
-
 	window->SetPaintValid(TRUE);
+
+	window->SetClipRect(&rc);
+
+	window->BeginFrame();
 
 	return hdc;
 }
@@ -198,10 +248,13 @@ BOOL EndPaint(HWND hWnd, const PAINTSTRUCT* lpPaint)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return FALSE;
 	}
+
+	window->SetClipRect(NULL);
 
 	window->EndFrame();
 
@@ -216,6 +269,7 @@ BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase)
 	}
 
 	Window* window = MainApplication()._windowManager.Find(hWnd);
+
 	if (!window)
 	{
 		return FALSE;
@@ -223,11 +277,6 @@ BOOL InvalidateRect(HWND hWnd, const RECT* lpRect, BOOL bErase)
 
 	(void)lpRect;
 	(void)bErase;
-
-	if (!window->IsPaintValid())
-	{
-		return TRUE;
-	}
 
 	window->SetPaintValid(FALSE);
 

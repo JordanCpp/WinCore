@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <WinCore/Application.hpp>
+#include <WinCore/Windows.h>
 
 void TestEqual(bool condition, const char* description, const char* function, const char* file, int line)
 {
@@ -348,11 +349,420 @@ void RunApplicationTests()
     Test_Application_SingletonStable();
 }
 
+static LRESULT CALLBACK GdiTestProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    if (msg == WM_CREATE)  return 0;
+    if (msg == WM_DESTROY) return 0;
+    return DefWindowProcA(hwnd, msg, wParam, lParam);
+}
+
+static HWND CreateGdiTestWindow(const char* className)
+{
+    WNDCLASSA wc;
+    memset(&wc, 0, sizeof(wc));
+    wc.lpfnWndProc = GdiTestProc;
+    wc.lpszClassName = className;
+
+    if (!RegisterClassA(&wc))
+    {
+        return NULL;
+    }
+
+    return CreateWindowExA(0, className, "GDI Test",
+        WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+        CW_USEDEFAULT, CW_USEDEFAULT,
+        320, 240, NULL, NULL, NULL, NULL);
+}
+
+static DWORD* MakeSolidPixels(int w, int h, DWORD color)
+{
+    DWORD* pixels = (DWORD*)malloc((size_t)w * h * sizeof(DWORD));
+    if (!pixels) return NULL;
+
+    for (int i = 0; i < w * h; ++i)
+    {
+        pixels[i] = color;
+    }
+
+    return pixels;
+}
+
+static void MakeBmi(BITMAPINFO* bmi, int w, int h, int biHeight)
+{
+    memset(bmi, 0, sizeof(BITMAPINFO));
+    bmi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi->bmiHeader.biWidth = w;
+    bmi->bmiHeader.biHeight = biHeight;
+    bmi->bmiHeader.biPlanes = 1;
+    bmi->bmiHeader.biBitCount = 32;
+    bmi->bmiHeader.biCompression = BI_RGB;
+    (void)h;
+}
+
+void Test_Gdi_SetDIBits_TopDown_GetDC()
+{
+    HWND h = CreateGdiTestWindow("Gdi_TD_GetDC");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 64, H = 64;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x00FF0000);
+    TEST_EQUAL(pixels != NULL);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+
+    HDC hdc = GetDC(h);
+    TEST_EQUAL(hdc != NULL);
+
+    int result = SetDIBitsToDevice(hdc, 0, 0, W, H,
+        0, 0, 0, H,
+        pixels, &bmi, DIB_RGB_COLORS);
+
+    TEST_EQUAL(result == H);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_SetDIBits_BottomUp_GetDC()
+{
+    HWND h = CreateGdiTestWindow("Gdi_BU_GetDC");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 64, H = 64;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x0000FF00);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, H);
+
+    HDC hdc = GetDC(h);
+
+    int result = SetDIBitsToDevice(hdc, 0, 0, W, H,
+        0, 0, 0, H,
+        pixels, &bmi, DIB_RGB_COLORS);
+
+    TEST_EQUAL(result == H);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_SetDIBits_InPaint()
+{
+    HWND h = CreateGdiTestWindow("Gdi_InPaint");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 32, H = 32;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x000000FF);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint(h, &ps);
+    TEST_EQUAL(hdc != NULL);
+
+    int result = SetDIBitsToDevice(hdc, 0, 0, W, H,
+        0, 0, 0, H,
+        pixels, &bmi, DIB_RGB_COLORS);
+    TEST_EQUAL(result == H);
+
+    TEST_EQUAL(EndPaint(h, &ps));
+
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_SetDIBits_MultipleSprites()
+{
+    HWND h = CreateGdiTestWindow("Gdi_MultiSprite");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 16, H = 16;
+    DWORD* red = MakeSolidPixels(W, H, 0x00FF0000);
+    DWORD* green = MakeSolidPixels(W, H, 0x0000FF00);
+    DWORD* blue = MakeSolidPixels(W, H, 0x000000FF);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+
+    PAINTSTRUCT ps;
+    HDC hdc = BeginPaint(h, &ps);
+    TEST_EQUAL(hdc != NULL);
+
+    TEST_EQUAL(SetDIBitsToDevice(hdc, 0, 0, W, H, 0, 0, 0, H, red, &bmi, DIB_RGB_COLORS) == H);
+    TEST_EQUAL(SetDIBitsToDevice(hdc, 32, 0, W, H, 0, 0, 0, H, green, &bmi, DIB_RGB_COLORS) == H);
+    TEST_EQUAL(SetDIBitsToDevice(hdc, 64, 0, W, H, 0, 0, 0, H, blue, &bmi, DIB_RGB_COLORS) == H);
+
+    TEST_EQUAL(EndPaint(h, &ps));
+
+    free(red);
+    free(green);
+    free(blue);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_SetDIBits_Banding()
+{
+    HWND h = CreateGdiTestWindow("Gdi_Banding");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 32, FULL_H = 64;
+
+    DWORD* full = MakeSolidPixels(W, FULL_H, 0x00FFFFFF);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, FULL_H, -FULL_H);
+
+    HDC hdc = GetDC(h);
+
+    for (UINT start = 0; start < FULL_H; start += 16)
+    {
+        const DWORD* strip = full + (size_t)start * W;
+
+        int result = SetDIBitsToDevice(hdc, 0, (int)start, W, 16, 0, start, start, 16, strip, &bmi, DIB_RGB_COLORS);
+
+        TEST_EQUAL(result == 16);
+    }
+
+    ReleaseDC(h, hdc);
+    free(full);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_SetDIBits_ZeroScanLines()
+{
+    HWND h = CreateGdiTestWindow("Gdi_ZeroScan");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 16, H = 16;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x00FFFF00);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+
+    HDC hdc = GetDC(h);
+
+    int result = SetDIBitsToDevice(hdc, 0, 0, W, H, 0, 0, 0, 0, pixels, &bmi, DIB_RGB_COLORS);
+
+    TEST_EQUAL(result == H);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_StretchDIBits_Upscale()
+{
+    HWND h = CreateGdiTestWindow("Gdi_StretchUp");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 32, H = 32;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x0000FF00);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, H);
+
+    HDC hdc = GetDC(h);
+
+    int result = StretchDIBits(hdc, 0, 0, 128, 128, 0, 0, W, H, pixels, &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+    TEST_EQUAL(result == H);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_StretchDIBits_FlipY()
+{
+    HWND h = CreateGdiTestWindow("Gdi_FlipY");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 16, H = 16;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x00FF00FF);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+
+    HDC hdc = GetDC(h);
+
+    int result = StretchDIBits(hdc,
+        0, H, W, -H,
+        0, 0, W, H,
+        pixels, &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+    TEST_EQUAL(result == H);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_StretchDIBits_FlipX()
+{
+    HWND h = CreateGdiTestWindow("Gdi_FlipX");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 16, H = 16;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x0000FFFF);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+
+    HDC hdc = GetDC(h);
+
+    int result = StretchDIBits(hdc,
+        W, 0, -W, H,
+        0, 0, W, H,
+        pixels, &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+    TEST_EQUAL(result == H);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_StretchDIBits_FlipXY()
+{
+    HWND h = CreateGdiTestWindow("Gdi_FlipXY");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 16, H = 16;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x00808080);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+
+    HDC hdc = GetDC(h);
+
+    int result = StretchDIBits(hdc,
+        W, H, -W, -H,
+        0, 0, W, H,
+        pixels, &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+    TEST_EQUAL(result == H);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_SetDIBits_Rejects16Bit()
+{
+    HWND h = CreateGdiTestWindow("Gdi_16Bit");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 16, H = 16;
+    WORD* pixels = (WORD*)malloc((size_t)W * H * sizeof(WORD));
+    memset(pixels, 0, (size_t)W * H * sizeof(WORD));
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+    bmi.bmiHeader.biBitCount = 16;
+
+    HDC hdc = GetDC(h);
+
+    int result = SetDIBitsToDevice(hdc, 0, 0, W, H,
+        0, 0, 0, H,
+        pixels, &bmi, DIB_RGB_COLORS);
+
+    TEST_EQUAL(result == 0);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_SetDIBits_StartScanOutOfRange()
+{
+    HWND h = CreateGdiTestWindow("Gdi_ScanOOR");
+    TEST_EQUAL(h != NULL);
+
+    const int W = 16, H = 16;
+    DWORD* pixels = MakeSolidPixels(W, H, 0x00FFFFFF);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, W, H, -H);
+
+    HDC hdc = GetDC(h);
+
+    int result = SetDIBitsToDevice(hdc, 0, 0, W, H,
+        0, 0, H, H,
+        pixels, &bmi, DIB_RGB_COLORS);
+
+    TEST_EQUAL(result == 0);
+
+    ReleaseDC(h, hdc);
+    free(pixels);
+    DestroyWindow(h);
+}
+
+void Test_Gdi_InvalidateRect_NoDedup()
+{
+    HWND h = CreateGdiTestWindow("Gdi_Invalidate");
+    TEST_EQUAL(h != NULL);
+
+    MSG m;
+    while (PeekMessageA(&m, NULL, 0, 0, PM_REMOVE)) {}
+
+    TEST_EQUAL(InvalidateRect(h, NULL, FALSE));
+    TEST_EQUAL(InvalidateRect(h, NULL, FALSE));
+
+    TEST_EQUAL(PeekMessageA(&m, h, WM_PAINT, WM_PAINT, PM_REMOVE));
+    TEST_EQUAL(m.message == WM_PAINT);
+
+    TEST_EQUAL(PeekMessageA(&m, h, WM_PAINT, WM_PAINT, PM_REMOVE));
+    TEST_EQUAL(m.message == WM_PAINT);
+
+    DestroyWindow(h);
+}
+
+void Test_Gdi_SetDIBits_NullArgs()
+{
+    HWND h = CreateGdiTestWindow("Gdi_NullArgs");
+    TEST_EQUAL(h != NULL);
+
+    BITMAPINFO bmi;
+    MakeBmi(&bmi, 16, 16, -16);
+
+    HDC hdc = GetDC(h);
+
+    TEST_EQUAL(SetDIBitsToDevice(NULL, 0, 0, 16, 16, 0, 0, 0, 16, NULL, &bmi, 0) == 0);
+    TEST_EQUAL(SetDIBitsToDevice(hdc, 0, 0, 16, 16, 0, 0, 0, 16, NULL, &bmi, 0) == 0);
+    TEST_EQUAL(SetDIBitsToDevice(hdc, 0, 0, 16, 16, 0, 0, 0, 16, "", NULL, 0) == 0);
+
+    ReleaseDC(h, hdc);
+    DestroyWindow(h);
+}
+
+void RunGdiTests()
+{
+    Test_Gdi_SetDIBits_TopDown_GetDC();
+    Test_Gdi_SetDIBits_BottomUp_GetDC();
+    Test_Gdi_SetDIBits_InPaint();
+    Test_Gdi_SetDIBits_MultipleSprites();
+    Test_Gdi_SetDIBits_Banding();
+    Test_Gdi_SetDIBits_ZeroScanLines();
+    Test_Gdi_StretchDIBits_Upscale();
+    Test_Gdi_StretchDIBits_FlipY();
+    Test_Gdi_StretchDIBits_FlipX();
+    Test_Gdi_StretchDIBits_FlipXY();
+    Test_Gdi_SetDIBits_Rejects16Bit();
+    Test_Gdi_SetDIBits_StartScanOutOfRange();
+    Test_Gdi_InvalidateRect_NoDedup();
+    Test_Gdi_SetDIBits_NullArgs();
+}
+
 int main()
 {
     RunMessageQueueTests();
     RunClassRegistratorTests();
     RunApplicationTests();
+    RunGdiTests();
 
 	return 0;
 }
